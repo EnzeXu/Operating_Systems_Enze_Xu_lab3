@@ -185,7 +185,10 @@ void commandExecute(char *line) {
 	else argv[argc] = NULL;
 
 	if (argc == 0) return; // empty command, do nothing, just print the prompt again
-
+	
+	// save the command into history
+	saveHistory(line);
+	
 	// deal with cd command
 	char pathUser[MAXN] = "";
 	if(strcmp(argv[0], "cd") == 0) {
@@ -310,6 +313,7 @@ int main(){
 	signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
 	time_t t;
 	time(&t);
+	readHistory();
 	printf("\033[32m[Enze Shell] version: v1.0\033[0m\n");
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
