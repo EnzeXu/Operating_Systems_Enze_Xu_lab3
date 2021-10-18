@@ -239,7 +239,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 
 
 
-void commandExecute(char *line) {
+int commandExecute(char *line) {
 	char line_origin[MAXN];
 	strcpy(line_origin, line);
 	char commandPathBin[MAXN] = "/bin/";
@@ -266,7 +266,7 @@ void commandExecute(char *line) {
 	else if (argv[argc - 1][strlen(argv[argc - 1]) - 1] == 10) argv[argc - 1][strlen(argv[argc - 1]) - 1] = '\0';
 
 	// printf("argc = %d\n", argc);
-	if (argc == 0) return; // empty command, do nothing, just print the prompt again
+	if (argc == 0) return 0; // empty command, do nothing, just print the prompt again
 	int flagBackgroundExecution = 0;
 	if (argv[argc - 1][strlen(argv[argc - 1]) - 1] == '&') {
 		flagBackgroundExecution = 1;
@@ -282,27 +282,27 @@ void commandExecute(char *line) {
 	}
 	else argv[argc] = NULL;
 
-	if (argc == 0) return; // empty command, do nothing, just print the prompt again
+	if (argc == 0) return 0; // empty command, do nothing, just print the prompt again
 	
 	// deal with !xyz history command
 	if (argc == 1 && argv[0][0] == '!') {
 		int findHistoryReturn = findHistory(argv[0]);
 		if (findHistoryReturn == -3) {
 			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
-			return;
+			return -1;
 		} else if (findHistoryReturn == -2) {
 			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
-			return;
+			return -1;
 		} else if (findHistoryReturn == -1) {
 			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", history_id_start, history_id_start + history_count - 1);
-			return;
+			return -1;
 		}
 		printf("\033[32m[Enze Shell] executing command %d: %s\033[0m", history_id[findHistoryReturn], history_commands[findHistoryReturn]);
 		char tmp[MAXN];
 		strcpy(tmp, history_commands[findHistoryReturn]);
 		//printf("\033[0m");
 		commandExecute(tmp);
-		return;
+		return 0;
 	}
 
 	// save the command into history
@@ -311,7 +311,7 @@ void commandExecute(char *line) {
 	// deal with cd command
 	char pathUser[MAXN] = "";
 	if (strcmp(argv[0], "cd") == 0) {
-		if (argv[1] == NULL) return;
+		if (argv[1] == NULL) return 0;
 		if (argv[1][0] == '~') {
 			argv[1][0] = '/';
 			char tmpPath[MAXN];
@@ -328,7 +328,7 @@ void commandExecute(char *line) {
 		}
 		int chdir_return = chdir(argv[1]);
 		if (chdir_return ==  -1) perror("cd");
-		return;
+		return 0;
 	}
 	
 	// deal with history command
@@ -340,7 +340,7 @@ void commandExecute(char *line) {
 			for (int i = 0; i < len; ++i) {
 				if (argv[1][i] < 48 || argv[1][i] > 57) {
 					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
-					return;
+					return -1;
 				}
 			}
 			int num = atoi(argv[1]);
@@ -348,25 +348,21 @@ void commandExecute(char *line) {
 		} else {
 			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
 		}
-		return;
+		return 0;
 	}
 	
 	// deal with erase history command
 	if (argc == 2 && strcmp(argv[0], "erase") == 0 && strcmp(argv[1], "history") == 0) {
 		printf("\033[32m[Enze Shell] history is erasesd (%d removed)\033[0m\n", (history_count > MAX_HISTORY)? MAX_HISTORY: history_count);
 		eraseHistory();
-		return;
+		return 0;
 	}	
 	
 	
 	//printArgv(argv);
 	int ret = commandExecutePipe(argv, 0, argc, flagBackgroundExecution);
 	
-	char ch;
-	
-	while((ch = getchar()) != EOF);
-	while((ch = getchar()) != EOF);
-	return;
+	return 1;
 }
 
 int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
@@ -430,11 +426,16 @@ int main(){
 	printf("\033[32m[Enze Shell] version: v1.0\033[0m\n");
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
+	int result = 0;
 	while(1) {
 		char line[MAXN];
 		printf("\033[34m%s\033[37m %% ", getMainPath());
 		char *tmp = fgets(line, MAXN, stdin);
 		if (!tmp) {
+			if (result == 1) {
+				result = 0;
+				continue;
+			}
 			printf("bad: %s", tmp);
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
@@ -449,7 +450,7 @@ int main(){
 			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
 			break;
 		}
-		commandExecute(line);
+		result = commandExecute(line);
 	}
 	return 0;
 }
