@@ -1,9 +1,5 @@
-//
-//  prog3.c
-//  prog3
-//
+//  lab3.c
 //  Created by ENZE XU on 2021/10/17.
-//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,16 +16,25 @@
 #define MAX_HISTORY_SAVE 1000
 #define MAXN 1000
 
-void quitHandler(int);
-char * getMainPath(void);
-char * getUserName(void);
-
+char mainPath[MAXN];
 int history_id_start;
 int history_count;
 int history_id[MAX_HISTORY_SAVE + 10] = {};
 char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
 
+void readHistory(void);
+void eraseHistory(void);
+int findHistory(char* arg);
+void printHistory(int num);
+void saveHistory(char *line);
+void printArgv(char *argv[]);
+int commandExecutePipe(char *argv[], int left, int right);
+int commandExecute(char *line);
 int pureExecute(char *argvOri[], int left, int right);
+char * getMainPath(void);
+char * getUserName(void);
+void quitHandler(int);
+
 
 // only when shell starts
 void readHistory(void) {
@@ -390,8 +395,6 @@ int pureExecute(char *argvOri[], int left, int right) {
 	return 0;
 }
 
-char mainPath[MAXN];
-
 char * getMainPath(void) {
 	getcwd(mainPath, sizeof(mainPath));
 	return mainPath;
@@ -401,6 +404,15 @@ char * getMainPath(void) {
 char * getUserName(void) { 
 	struct passwd *pwd = getpwuid(getuid());
 	return pwd->pw_name;
+}
+
+// signal handler used to ignore Ctrl-C
+void quitHandler(int theInt) {
+	//fflush(stdin);
+	//printf("\n[Enze Shell] Not QUITTING (SIGINT = %d)\n", theInt);
+	//printf("\n%s %% ", getMainPath());
+	//fflush(stdout);
+	return;
 }
 
 int main(){
@@ -433,10 +445,4 @@ int main(){
 	return 0;
 }
 
-void quitHandler(int theInt) { // signal handler used to ignore Ctrl-C
-	//fflush(stdin);
-	//printf("\n[Enze Shell] Not QUITTING (SIGINT = %d)\n", theInt);
-	//printf("\n%s %% ", getMainPath());
-	//fflush(stdout);
-	return;
-}
+
