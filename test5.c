@@ -435,10 +435,10 @@ int main(){
 	while(1) {
 		//char line[MAXN];
 		char prompt[1000] = "\033[34m";
-		char tail[10] = "\033[37m %% ";
+		//char tail[10] = "\033[37m %% ";
 		strcat(prompt, getUserName());
 		strcat(prompt, getMainPath());
-		strcat(prompt, tail);
+		strcat(prompt, "\033[37m %% ");
 		//printf("%s\n", prompt);
 		//printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
 		char *line = readline(prompt);
