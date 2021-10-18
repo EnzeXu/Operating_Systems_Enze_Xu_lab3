@@ -215,6 +215,8 @@ int pureExecute(char *argvOri[], int left, int right) {
 	// printf("command = %s\n", commandFull);
 		int execvp_return = execvp(argv[0], argv);
 		if (execvp_return < 0) {
+			perror("\033[32m[Enze Shell] child failed\033[0m");
+			printf("\033[0m");
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -274,13 +276,6 @@ int commandExecutePipe(char *argv[], int left, int right) {
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
 		printf("\n\033[32m[Enze Shell] errors occur in pipe, please check your input and try again!\033[0m\n");
-		
-		char info[4096] = {0};
-		char line[1000];
-		while(fgets(line, 1000, stdin) != NULL) { // 读取子进程的错误信息
-			strcat(info, line);
-		}
-		printf("%s", info); // 打印错误信息
 		result = -1;
 	} else if (pipeSeat < right - 1){
 		close(f_des[1]);
