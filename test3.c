@@ -13,10 +13,10 @@ void printArgv(char *argv[]) { // test print function
 }
 
 
-void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
 	printf("\nCommand:\n%d %d %d\n", left, right, flagBackgroundExecution);
 	printArgv(argvOri);
-	return;
+	return 0;
 }
 
 
@@ -55,7 +55,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		dup2(f_des[1], fileno(stdout));
 		close(f_des[1]);
 
-		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
+		result = (argv, left, pipeSeat, flagBackgroundExecution);
 		exit(result);
 	}
 	
