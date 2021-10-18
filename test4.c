@@ -429,11 +429,11 @@ int main(){
 		char line[MAXN];
 		printf("\033[34m%s\033[37m %% ", getMainPath());
 		char *tmp = fgets(line, MAXN, stdin);
-		if (!tmp) {
-			printf("bad: %s", tmp);
-			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
-			break;
-		}
+		//if (!tmp) {
+		//	printf("bad: %s", tmp);
+		//	printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
+		//	break;
+		//}
 		if (strcmp(line, "exit\n") == 0) {
 			saveHistory(line);
 			printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
