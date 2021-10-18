@@ -423,7 +423,7 @@ void quitHandler(int theInt) {
 	return;
 }
 
-const char *command = NULL;
+char *command = NULL;
 
 int main(){
 	signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
