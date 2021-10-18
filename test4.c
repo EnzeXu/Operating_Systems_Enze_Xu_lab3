@@ -219,7 +219,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[0]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
-	char c = fgets(stdin);
+	char c = fgetc(stdin);
 	return result;
 }
 
