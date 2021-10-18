@@ -57,14 +57,15 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 
 	if (flagBackgroundExecution == 1) { // iff receive an '&', skip waitpid
 		printf("\033[32m[Enze Shell] child pid = %d\033[0m\n", pid);
-		return ;
+		return 0;
 	}
 	wait_pid = waitpid(pid, &status, 0);
 	// printf("waitpid return %d\n", wait_pid);
 	if (wait_pid == -1) {
 		printf("\033[32m[Enze Shell] parent process cannot wait any more, return\033[0m\n");
+		return -1;
 	}
-	return;
+	return 0;
 }
 
 
