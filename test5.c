@@ -445,6 +445,13 @@ int main(){
 			free(line);
 			break;
 		}
+		int length = strlen(line);
+		for (int i = 0; i < length; ++i) {
+			if (line[i] != ' ' && line[i] != '\n') {
+				add_history(line);
+				break;
+			}
+		}
 		strcat(line, "\n");
 		if (strcmp(line, "exit\n") == 0) {
 			saveHistory(line);
@@ -456,13 +463,6 @@ int main(){
 			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
 			free(line);
 			break;
-		}
-		int length = strlen(line);
-		for (int i = 0; i < length; ++i) {
-			if (line[i] != ' ' && line[i] != '\n') {
-				add_history(line);
-				break;
-			}
 		}
 		int result = commandExecute(line);
 		free(line);
