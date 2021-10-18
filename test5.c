@@ -433,13 +433,11 @@ int main(){
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
 	while(1) {
-		//char line[MAXN];
 		char prompt[1000] = "\033[34m";
-		//char tail[10] = "\033[37m %% ";
 		strcat(prompt, getUserName());
+		strcat(prompt, ":");
 		strcat(prompt, getMainPath());
-		strcat(prompt, "\033[37m %% ");
-		//printf("%s\n", prompt);
+		strcat(prompt, "\033[37m % ");
 		//printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
 		char *line = readline(prompt);
 		if (!line) {
