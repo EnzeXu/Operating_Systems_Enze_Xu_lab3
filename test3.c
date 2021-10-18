@@ -42,7 +42,7 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 	printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
 	printArgv(argv);
 	
-	fflush(stdout);
+	//fflush(stdout);
 	
 	// fork
 	pid_t pid, wait_pid;
@@ -107,7 +107,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		dup2(f_des[1], fileno(stdout));
 		close(f_des[1]);
 
-		result = (argv, left, pipeSeat, flagBackgroundExecution);
+		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
 		exit(result);
 	}
 	
