@@ -29,7 +29,7 @@ int history_count;
 int history_id[MAX_HISTORY_SAVE + 10] = {};
 char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
 
-int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution);
+int pureExecute(char *argvOri[], int left, int right);
 
 // only when shell starts
 void readHistory(void) {
@@ -118,7 +118,6 @@ void printHistory(int num) {
 	return;
 }
 
-
 // after each execution
 void saveHistory(char *line) {
 	// printf("save history: %s", line);
@@ -153,7 +152,6 @@ void saveHistory(char *line) {
 	return;
 }
 
-
 void printArgv(char *argv[]) { // test print function
 	int i = 0;
 	while(argv[i] != NULL) {
@@ -163,7 +161,7 @@ void printArgv(char *argv[]) { // test print function
 	printf("argv[%d] NULL\n", i);
 }
 
-int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExecution) {
+int commandExecutePipe(char *argv[], int left, int right) {
 	//printf("commandExecutePipe: [%d, %d)\n", left, right);
 	
 	if (left >= right) return 1;
@@ -177,7 +175,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 	}
 	
 	if (pipeSeat == -1) { // if there is no pipe
-		return pureExecute(argv, left, right, flagBackgroundExecution);
+		return pureExecute(argv, left, right);
 	}
 	
 	if (pipeSeat == right - 1) {
@@ -197,9 +195,8 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[0]);
 		dup2(f_des[1], fileno(stdout));
 		close(f_des[1]);
-
-		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
-		exit(0);
+		result = pureExecute(argv, left, pipeSeat);
+		exit(result);
 	}
 	
 	// parent
@@ -211,33 +208,16 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
-		char info[MAXN] = {0};
-		char line[MAXN];
-		
-		while(fgets(line, MAXN, stdin) != NULL) {
-			strcat(info, line);
-		}
-		printf("ce: %s", info);
-		
 		printf("Errors occur in pipe, please check your input and try again!\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
 		close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
-		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
+		result = commandExecutePipe(argv, pipeSeat + 1, right);
 	}
-	char info[MAXN] = {0};
-	char line[MAXN];
-	
-	while(fgets(line, MAXN, stdin) != NULL) {
-		strcat(info, line);
-	}
-	printf("p: %s", info);
 	return result;
 }
-
-
 
 int commandExecute(char *line) {
 	char line_origin[MAXN];
@@ -358,40 +338,16 @@ int commandExecute(char *line) {
 		return 0;
 	}	
 	
-	
-	//printArgv(argv);
-	int ret = commandExecutePipe(argv, 0, argc, flagBackgroundExecution);
-	
-	return 1;
-}
-
-int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
-	// printf("hello\n");
-	char *argv[MAXN] = {};
-	for (int i = left; i < right; ++i) {
-		// printf("copy argvOri[%d] to argv[%d]\n", i, i - left);
-		argv[i - left] = argvOri[i];
-	}
-
-	argv[right] = NULL;
-	
-	//printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
-	//printArgv(argv);
-	
-	//fflush(stdout);
-	
-	// fork
 	pid_t pid, wait_pid;
 	int status;
 	pid = fork();
 	if (pid == 0) {
-	// printf("command = %s\n", commandFull);
-		int execvp_return = execvp(argv[0], argv);
-		if (execvp_return < 0) {
-			perror("\033[32m[Enze Shell] child failed\033[0m");
-			printf("\033[0m");
-			exit(EXIT_FAILURE);
-		}
+		int in_f = dup(STDIN_FILENO);
+		int out_f = dup(STDOUT_FILENO);
+		int result = commandExecutePipe(argv, 0, argc);
+		dup2(in_f, STDIN_FILENO);
+		dup2(out_f, STDOUT_FILENO);
+		exit(result);
 	}
 
 	if (flagBackgroundExecution == 1) { // iff receive an '&', skip waitpid
@@ -402,6 +358,31 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 	// printf("waitpid return %d\n", wait_pid);
 	if (wait_pid == -1) {
 		printf("\033[32m[Enze Shell] parent process cannot wait any more, return\033[0m\n");
+		return -1;
+	}
+	return 0;
+}
+
+int pureExecute(char *argvOri[], int left, int right) {
+	char *argv[MAXN] = {};
+	for (int i = left; i < right; ++i) {
+		argv[i - left] = argvOri[i];
+	}
+	argv[right] = NULL;
+	
+	// fork
+	pid_t pid, wait_pid;
+	int status;
+	pid = fork();
+	if (pid == 0) {
+	// printf("command = %s\n", commandFull);
+		int execvp_return = execvp(argv[0], argv);
+		if (execvp_return < 0) {
+			exit(EXIT_FAILURE);
+		}
+	}
+	wait_pid = waitpid(pid, &status, 0);
+	if (wait_pid == -1) {
 		return -1;
 	}
 	return 0;
