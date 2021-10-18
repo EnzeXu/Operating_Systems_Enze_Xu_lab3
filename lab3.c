@@ -260,7 +260,7 @@ void commandExecute(char *line) {
 		} else if (argc == 2) {
 			int len = strlen(argv[1]);
 			for (int i = 0; i < len; ++i) {
-				if (arg[i] < 48 || arg[i] > 57) {
+				if (argv[1][i] < 48 || argv[1][i] > 57) {
 					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
 					return;
 				}
