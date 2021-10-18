@@ -29,7 +29,7 @@ int history_count;
 int history_id[MAX_HISTORY_SAVE + 10] = {};
 char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
 
-void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution);
+int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution);
 
 // only when shell starts
 void readHistory(void) {
@@ -162,6 +162,68 @@ void printArgv(char *argv[]) { // test print function
 	}
 	printf("argv[%d] NULL\n", i);
 }
+
+int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExecution) {
+	printf("commandExecutePipe: [%d, %d)\n", left, right);
+	
+	if (left >= right) return 1;
+	
+	int pipeSeat = -1;
+	for (int i = left; i < right; ++i) {
+		if (strcmp(argv[i], "|") == 0) {
+			pipeSeat = i;
+			break;
+		}
+	}
+	
+	if (pipeSeat == -1) { // if there is no pipe
+		return pureExecute(argv, left, right, flagBackgroundExecution);
+	}
+	
+	if (pipeSeat == right - 1) {
+		printf("no available command after \"|\"\n");
+		return -1;
+	}
+
+	int f_des[2];
+	if (pipe(f_des) == -1) {
+		perror("Pipe");
+		return -1;
+	}
+	
+	int result = 0;
+	pid_t pid = fork();
+	if (pid == 0) { // child
+		close(f_des[0]);
+		dup2(f_des[1], fileno(stdout));
+		close(f_des[1]);
+
+		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
+		exit(result);
+	}
+	
+	// parent
+	int status;
+	pid_t wait_pid;
+	wait_pid = waitpid(pid, &status, 0);
+
+	if (wait_pid == -1) { // error in child
+		close(f_des[1]);
+		dup2(f_des[0], STDIN_FILENO);
+		close(f_des[0]);
+		printf("Errors occur in pipe, please check your input and try again!\n");
+		result = -1;
+	} else if (pipeSeat < right - 1){
+		close(f_des[1]);
+		dup2(f_des[0], STDIN_FILENO);
+		close(f_des[0]);
+		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
+	}
+
+	return result;
+}
+
+
 
 void commandExecute(char *line) {
 	char line_origin[MAXN];
@@ -304,10 +366,10 @@ void commandExecute(char *line) {
 	}
 	*/
 	//printArgv(argv);
-	pureExecute(argv, 0, argc, flagBackgroundExecution);
+	commandExecutePipe(argv, 0, argc, flagBackgroundExecution);
 }
 
-void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
 	// printf("hello\n");
 	char *argv[MAXN] = {};
 	for (int i = left; i < right; ++i) {
@@ -317,8 +379,11 @@ void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecuti
 
 	argv[right] = NULL;
 	
-	//printf("%d %d %d\n", left, right, flagBackgroundExecution);
-	//printArgv(argv);
+	printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
+	printArgv(argv);
+	
+	//fflush(stdout);
+	
 	// fork
 	pid_t pid, wait_pid;
 	int status;
@@ -335,14 +400,15 @@ void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecuti
 
 	if (flagBackgroundExecution == 1) { // iff receive an '&', skip waitpid
 		printf("\033[32m[Enze Shell] child pid = %d\033[0m\n", pid);
-		return ;
+		return 0;
 	}
 	wait_pid = waitpid(pid, &status, 0);
 	// printf("waitpid return %d\n", wait_pid);
 	if (wait_pid == -1) {
 		printf("\033[32m[Enze Shell] parent process cannot wait any more, return\033[0m\n");
+		return -1;
 	}
-	return;
+	return 0;
 }
 
 char mainPath[MAXN];
