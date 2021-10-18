@@ -22,19 +22,30 @@ int history_count;
 int history_id[MAX_HISTORY_SAVE + 10] = {};
 char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
 
+char *getMainPath(void);
+char *getUserName(void);
 void readHistory(void);
 void eraseHistory(void);
 int findHistory(char* arg);
 void printHistory(int num);
 void saveHistory(char *line);
 void printArgv(char *argv[]);
+int pureExecute(char *argvOri[], int left, int right);
 int commandExecutePipe(char *argv[], int left, int right);
 int commandExecute(char *line);
-int pureExecute(char *argvOri[], int left, int right);
-char * getMainPath(void);
-char * getUserName(void);
 void quitHandler(int);
 
+// get pwd
+char *getMainPath(void) {
+	getcwd(mainPath, sizeof(mainPath));
+	return mainPath;
+}
+
+// mine is "/home/csuser/" but if Dr. Canas tests other user...emmm...anyway, let me figure it out
+char *getUserName(void) {
+	struct passwd *pwd = getpwuid(getuid());
+	return pwd->pw_name;
+}
 
 // only when shell starts
 void readHistory(void) {
@@ -167,6 +178,54 @@ void printArgv(char *argv[]) {
 	printf("argv[%d] NULL\n", i);
 }
 
+// pure execution
+int pureExecute(char *argvOri[], int left, int right) {
+	char *argv[MAXN] = {};
+	int argc = right - left;
+	for (int i = left; i < right; ++i) {
+		argv[i - left] = argvOri[i];
+	}
+	argv[right] = NULL;
+	
+	// deal with history command
+	if (strcmp(argv[0], "history") == 0) {
+		if (argc == 1) {
+			printHistory(MAX_HISTORY);
+		} else if (argc == 2) {
+			int len = strlen(argv[1]);
+			for (int i = 0; i < len; ++i) {
+				if (argv[1][i] < 48 || argv[1][i] > 57) {
+					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
+					return -1;
+				}
+			}
+			int num = atoi(argv[1]);
+			printHistory(num);
+		} else {
+			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
+		}
+		return 0;
+	}
+	
+	// fork
+	pid_t pid, wait_pid;
+	int status;
+	pid = fork();
+	if (pid == 0) {
+	// printf("command = %s\n", commandFull);
+		int execvp_return = execvp(argv[0], argv);
+		if (execvp_return < 0) {
+			exit(EXIT_FAILURE);
+		}
+	}
+	wait_pid = waitpid(pid, &status, 0);
+	if (wait_pid == -1) {
+		return -1;
+	}
+	return 0;
+}
+
+// deal with pipe
 int commandExecutePipe(char *argv[], int left, int right) {
 	//printf("commandExecutePipe: [%d, %d)\n", left, right);
 	
@@ -185,7 +244,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	}
 	
 	if (pipeSeat == right - 1) {
-		printf("no available command after \"|\"\n");
+		printf("\n\033[32m[Enze Shell] no available command after \"|\"\033[0m\n");
 		return -1;
 	}
 
@@ -214,7 +273,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 		close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
-		printf("Errors occur in pipe, please check your input and try again!\n");
+		printf("\n\033[32m[Enze Shell] errors occur in pipe, please check your input and try again!\033[0m\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
 		close(f_des[1]);
@@ -225,6 +284,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	return result;
 }
 
+// deal command
 int commandExecute(char *line) {
 	char line_origin[MAXN];
 	strcpy(line_origin, line);
@@ -349,63 +409,6 @@ int commandExecute(char *line) {
 	return 0;
 }
 
-int pureExecute(char *argvOri[], int left, int right) {
-	char *argv[MAXN] = {};
-	int argc = right - left;
-	for (int i = left; i < right; ++i) {
-		argv[i - left] = argvOri[i];
-	}
-	argv[right] = NULL;
-	
-	// deal with history command
-	if (strcmp(argv[0], "history") == 0) {
-		if (argc == 1) {
-			printHistory(MAX_HISTORY);
-		} else if (argc == 2) {
-			int len = strlen(argv[1]);
-			for (int i = 0; i < len; ++i) {
-				if (argv[1][i] < 48 || argv[1][i] > 57) {
-					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
-					return -1;
-				}
-			}
-			int num = atoi(argv[1]);
-			printHistory(num);
-		} else {
-			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
-		}
-		return 0;
-	}
-	
-	// fork
-	pid_t pid, wait_pid;
-	int status;
-	pid = fork();
-	if (pid == 0) {
-	// printf("command = %s\n", commandFull);
-		int execvp_return = execvp(argv[0], argv);
-		if (execvp_return < 0) {
-			exit(EXIT_FAILURE);
-		}
-	}
-	wait_pid = waitpid(pid, &status, 0);
-	if (wait_pid == -1) {
-		return -1;
-	}
-	return 0;
-}
-
-char * getMainPath(void) {
-	getcwd(mainPath, sizeof(mainPath));
-	return mainPath;
-}
-
-// mine is "/home/csuser/" but if Professor try other user...emmm...anyway, let me figure it out
-char * getUserName(void) { 
-	struct passwd *pwd = getpwuid(getuid());
-	return pwd->pw_name;
-}
-
 // signal handler used to ignore Ctrl-C
 void quitHandler(int theInt) {
 	//fflush(stdin);
@@ -444,5 +447,3 @@ int main(){
 	}
 	return 0;
 }
-
-
