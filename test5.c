@@ -12,6 +12,9 @@
 #include <sys/wait.h>
 #include <pwd.h>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #define MAX_HISTORY 100
 #define MAX_HISTORY_SAVE 1000
 #define MAXN 1000
@@ -429,9 +432,10 @@ int main(){
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
 	while(1) {
-		char line[MAXN];
-		printf("\033[34m%s\033[37m %% ", getMainPath());
-		if (!fgets(line, MAXN, stdin)) {
+		//char line[MAXN];
+		//printf("\033[34m%s\033[37m %% ", getMainPath());
+		char *line = readline("\033[34m%s\033[37m %% ", getMainPath());
+		if (!line) {
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
 		}
@@ -446,6 +450,10 @@ int main(){
 			break;
 		}
 		int result = commandExecute(line);
+		if (strlen(str) > 0) {
+			add_history(str);
+		}
+		free(str);
 	}
 	return 0;
 }
