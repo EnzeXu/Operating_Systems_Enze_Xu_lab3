@@ -437,8 +437,10 @@ int main(){
 		char *line = readline("% ");
 		if (!line) {
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
+			free(line);
 			break;
 		}
+		strcat(line, "\n");
 		if (strcmp(line, "exit\n") == 0) {
 			saveHistory(line);
 			printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
@@ -447,10 +449,11 @@ int main(){
 		if (strcmp(line, "exit()\n") == 0) {
 			saveHistory(line);
 			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
+			free(line);
 			break;
 		}
 		int result = commandExecute(line);
-		if (strlen(line) > 0) {
+		if (strlen(line) > 1) {
 			add_history(line);
 		}
 		free(line);
