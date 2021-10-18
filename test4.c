@@ -219,7 +219,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[0]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
-
+	char c = fgets(stdin);
 	return result;
 }
 
@@ -416,9 +416,9 @@ int main(){
 		printf("\033[34m%s\033[37m %% ", getMainPath());
 		char *tmp = fgets(line, MAXN, stdin);
 		if (!tmp) {
-			//printf("bad: %s", tmp);
-			//printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
-			continue;
+			printf("bad: %s", tmp);
+			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
+			break;
 		}
 		if (strcmp(line, "exit\n") == 0) {
 			saveHistory(line);
