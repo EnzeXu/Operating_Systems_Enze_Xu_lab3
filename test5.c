@@ -423,6 +423,8 @@ void quitHandler(int theInt) {
 	return;
 }
 
+const char *command = NULL;
+
 int main(){
 	signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
 	time_t t;
@@ -433,8 +435,10 @@ int main(){
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
 	while(1) {
 		//char line[MAXN];
-		printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
-		char *line = readline("");
+		char tmp[10] = "hello";
+		strcpy(command, tmp);
+		//printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
+		char *line = readline(command);
 		if (!line) {
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			free(line);
