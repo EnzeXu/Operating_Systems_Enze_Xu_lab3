@@ -457,7 +457,7 @@ int main(){
 			free(line);
 			break;
 		}
-		length = strlen(line);
+		int length = strlen(line);
 		for (int i = 0; i < length; ++i) {
 			if (line[i] != ' ' && line[i] != '\n') {
 				add_history(line);
