@@ -88,9 +88,13 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 
 
 int main() {
-	
-	char lines[1000][1000] = {"env", "|", "grep", "lab3"};
-	char **argv = lines;
+	char a[100] = "env";
+	char b[100] = "|";
+	char c[100] = "grep";
+	char d[100] = "lab3";
+	char *argv[10] = {a, b, c, d};
+	//char lines[1000][1000] = {"env", "|", "grep", "lab3"};
+	//char **argv = lines;
 	commandExecutePipe(argv, 0, 4, 0);
 	return 0;
 }
