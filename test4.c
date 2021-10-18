@@ -164,7 +164,7 @@ void printArgv(char *argv[]) { // test print function
 }
 
 int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExecution) {
-	printf("commandExecutePipe: [%d, %d)\n", left, right);
+	//printf("commandExecutePipe: [%d, %d)\n", left, right);
 	
 	if (left >= right) return 1;
 	
@@ -199,7 +199,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[1]);
 
 		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
-		exit(result);
+		exit(0);
 	}
 	
 	// parent
@@ -209,13 +209,13 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 
 	if (wait_pid == -1) { // error in child
 		close(f_des[1]);
-		dup2(f_des[0], STDIN_FILENO);
+		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
 		printf("Errors occur in pipe, please check your input and try again!\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
 		close(f_des[1]);
-		dup2(f_des[0], STDIN_FILENO);
+		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
@@ -344,29 +344,10 @@ void commandExecute(char *line) {
 		return;
 	}	
 	
-	// check if the command is available
-	/*
-	strcpy(commandFullBin, commandPathBin);
-	strcat(commandFullBin, argv[0]);
-	strcpy(commandFullUsrBin, commandPathUsrBin);
-	strcat(commandFullUsrBin, argv[0]);
 	
-	if (access(commandFullBin, F_OK) == 0) {
-		// strcpy(commandFull, commandFullBin);
-	}
-	else if (access(commandFullUsrBin, F_OK) == 0) {
-		// strcpy(commandFull, commandFullUsrBin);
-	}
-	else if (access(argv[0], F_OK) == 0) {
-		// strcpy(commandFull, commandFullUsrBin);
-	}
-	else {
-		printf("\033[32m[Enze Shell] %s: command not found\033[0m\n", argv[0]);
-		return;
-	}
-	*/
 	//printArgv(argv);
-	commandExecutePipe(argv, 0, argc, flagBackgroundExecution);
+	int ret = commandExecutePipe(argv, 0, argc, flagBackgroundExecution);
+	return;
 }
 
 int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
@@ -379,8 +360,8 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 
 	argv[right] = NULL;
 	
-	printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
-	printArgv(argv);
+	//printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
+	//printArgv(argv);
 	
 	//fflush(stdout);
 	
@@ -433,7 +414,9 @@ int main(){
 	while(1) {
 		char line[MAXN];
 		printf("\033[34m%s\033[37m %% ", getMainPath());
-		if (!fgets(line, MAXN, stdin)) {
+		char tmp[MAXN] = fgets(line, MAXN, stdin);
+		if (!tmp) {
+			printf("bad: %s", tmp);
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
 		}

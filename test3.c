@@ -39,8 +39,8 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 
 	argv[right] = NULL;
 	
-	printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
-	printArgv(argv);
+	// printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
+	// printArgv(argv);
 	
 	//fflush(stdout);
 	
@@ -73,7 +73,7 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 
 
 int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExecution) {
-	printf("commandExecutePipe: [%d, %d)\n", left, right);
+	// printf("commandExecutePipe: [%d, %d)\n", left, right);
 	
 	if (left >= right) return 1;
 	
