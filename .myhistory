@@ -1,4 +1,4 @@
-37
+45
 1 history
 2 ls
 3 history
@@ -36,3 +36,11 @@
 35 ls
 36 history
 37 exit()
+38 ls
+39 history
+40 cat .myhistory | grep ls
+41 hsitory
+42 history
+43 history | wc -l
+44 cat .myhistory | grep history | wc -l
+45 cat .myhistory | grep history
