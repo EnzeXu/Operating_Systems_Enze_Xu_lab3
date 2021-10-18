@@ -134,13 +134,17 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 
 
 int main() {
-	char a[100] = "env";
-	char b[100] = "|";
-	char c[100] = "grep";
-	char d[100] = "/bin";
-	char *argv[10] = {a, b, c, d};
+	char a[100] = "cat";
+	char b[100] = ".myhistory";
+	char c[100] = "|";
+	char d[100] = "grep";
+	char e[100] = "s";
+	char f[100] = "|";
+	char g[100] = "wc";
+	char h[100] = "-l";
+	char *argv[10] = {a, b, c, d, e, f, g, h};
 	//char lines[1000][1000] = {"env", "|", "grep", "/bin"};
 	//char **argv = lines;
-	commandExecutePipe(argv, 0, 4, 0);
+	commandExecutePipe(argv, 0, 8, 0);
 	return 0;
 }
