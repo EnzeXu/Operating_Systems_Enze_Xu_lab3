@@ -88,7 +88,7 @@ int findHistory(char* arg) {
 }
 
 // when executing "% history"
-void printHistory(num) {
+void printHistory(int num) {
 	if (history_count <= num) {
 		for (int i = 0; i < history_count; ++i) {
 			printf("%5d  %s", history_id[i], history_commands[i]);
