@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 void printArgv(char *argv[]) { // test print function
 	int i = 0;
@@ -14,7 +15,7 @@ void printArgv(char *argv[]) { // test print function
 
 void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
 	printf("\nCommand:\n%d %d %d\n", left, right, flagBackgroundExecution);
-	printArgv(argv);
+	printArgv(argvOri);
 	return;
 }
 
@@ -84,6 +85,6 @@ int main() {
 	
 	char lines[1000][1000] = {"env", "|", "grep", "lab3"};
 	char *argv = lines;
-	commandExecutePipe(argv, 0, 4);
+	commandExecutePipe(argv, 0, 4, 0);
 	return 0;
 }
