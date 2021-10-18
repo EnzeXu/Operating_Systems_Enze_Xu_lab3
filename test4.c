@@ -214,7 +214,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		char info[MAXN] = {0};
 		char line[MAXN];
 		
-		while(fgets(line, BUF_SZ, stdin) != NULL) {
+		while(fgets(line, MAXN, stdin) != NULL) {
 			strcat(info, line);
 		}
 		printf("ce: %s", info);
@@ -230,7 +230,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 	char info[MAXN] = {0};
 	char line[MAXN];
 	
-	while(fgets(line, BUF_SZ, stdin) != NULL) {
+	while(fgets(line, MAXN, stdin) != NULL) {
 		strcat(info, line);
 	}
 	printf("p: %s", info);
