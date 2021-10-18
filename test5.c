@@ -450,10 +450,10 @@ int main(){
 			break;
 		}
 		int result = commandExecute(line);
-		if (strlen(str) > 0) {
-			add_history(str);
+		if (strlen(line) > 0) {
+			add_history(line);
 		}
-		free(str);
+		free(line);
 	}
 	return 0;
 }
