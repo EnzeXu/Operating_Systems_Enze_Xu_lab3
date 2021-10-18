@@ -29,6 +29,8 @@ int history_count;
 int history_id[MAX_HISTORY_SAVE + 10] = {};
 char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
 
+void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution);
+
 // only when shell starts
 void readHistory(void) {
 	FILE *fp = NULL;
@@ -301,15 +303,22 @@ void commandExecute(char *line) {
 		return;
 	}
 	*/
+	//printArgv(argv);
 	pureExecute(argv, 0, argc, flagBackgroundExecution);
 }
 
-void pureExecute(char *argvOri[], left, right, flagBackgroundExecution) {
-	char *argv[MAXN];
+void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+	// printf("hello\n");
+	char *argv[MAXN] = {};
 	for (int i = left; i < right; ++i) {
-		strcpy(argv[i - left], argvOri[i]);
+		// printf("copy argvOri[%d] to argv[%d]\n", i, i - left);
+		argv[i - left] = argvOri[i];
 	}
+
 	argv[right] = NULL;
+	
+	//printf("%d %d %d\n", left, right, flagBackgroundExecution);
+	//printArgv(argv);
 	// fork
 	pid_t pid, wait_pid;
 	int status;
