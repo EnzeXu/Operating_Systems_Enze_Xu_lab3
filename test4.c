@@ -414,7 +414,7 @@ int main(){
 	while(1) {
 		char line[MAXN];
 		printf("\033[34m%s\033[37m %% ", getMainPath());
-		char tmp[MAXN] = fgets(line, MAXN, stdin);
+		char *tmp = fgets(line, MAXN, stdin);
 		if (!tmp) {
 			printf("bad: %s", tmp);
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
