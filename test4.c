@@ -211,6 +211,14 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
+		char info[MAXN] = {0};
+		char line[MAXN];
+		
+		while(fgets(line, BUF_SZ, stdin) != NULL) {
+			strcat(info, line);
+		}
+		printf("ce: %s", info);
+		
 		printf("Errors occur in pipe, please check your input and try again!\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
@@ -219,7 +227,13 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		close(f_des[0]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
-	char c = fgetc(stdin);
+	char info[MAXN] = {0};
+	char line[MAXN];
+	
+	while(fgets(line, BUF_SZ, stdin) != NULL) {
+		strcat(info, line);
+	}
+	printf("p: %s", info);
 	return result;
 }
 
