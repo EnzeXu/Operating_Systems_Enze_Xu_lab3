@@ -152,7 +152,8 @@ void saveHistory(char *line) {
 	return;
 }
 
-void printArgv(char *argv[]) { // test print function
+// test print function
+void printArgv(char *argv[]) {
 	int i = 0;
 	while(argv[i] != NULL) {
 		printf("argv[%d] %s (length = %ld)\n", i, argv[i], strlen(argv[i]));
@@ -311,26 +312,6 @@ int commandExecute(char *line) {
 		return 0;
 	}
 	
-	// deal with history command
-	if (strcmp(argv[0], "history") == 0) {
-		if (argc == 1) {
-			printHistory(MAX_HISTORY);
-		} else if (argc == 2) {
-			int len = strlen(argv[1]);
-			for (int i = 0; i < len; ++i) {
-				if (argv[1][i] < 48 || argv[1][i] > 57) {
-					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
-					return -1;
-				}
-			}
-			int num = atoi(argv[1]);
-			printHistory(num);
-		} else {
-			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
-		}
-		return 0;
-	}
-	
 	// deal with erase history command
 	if (argc == 2 && strcmp(argv[0], "erase") == 0 && strcmp(argv[1], "history") == 0) {
 		printf("\033[32m[Enze Shell] history is erasesd (%d removed)\033[0m\n", (history_count > MAX_HISTORY)? MAX_HISTORY: history_count);
@@ -370,6 +351,26 @@ int pureExecute(char *argvOri[], int left, int right) {
 	}
 	argv[right] = NULL;
 	
+	// deal with history command
+	if (strcmp(argv[0], "history") == 0) {
+		if (argc == 1) {
+			printHistory(MAX_HISTORY);
+		} else if (argc == 2) {
+			int len = strlen(argv[1]);
+			for (int i = 0; i < len; ++i) {
+				if (argv[1][i] < 48 || argv[1][i] > 57) {
+					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
+					return -1;
+				}
+			}
+			int num = atoi(argv[1]);
+			printHistory(num);
+		} else {
+			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
+		}
+		return 0;
+	}
+	
 	// fork
 	pid_t pid, wait_pid;
 	int status;
@@ -389,12 +390,14 @@ int pureExecute(char *argvOri[], int left, int right) {
 }
 
 char mainPath[MAXN];
+
 char * getMainPath(void) {
 	getcwd(mainPath, sizeof(mainPath));
 	return mainPath;
 }
 
-char * getUserName(void) { // mine is "/home/csuser/" but if Professor try other user...emmm...anyway, let me figure it out
+// mine is "/home/csuser/" but if Professor try other user...emmm...anyway, let me figure it out
+char * getUserName(void) { 
 	struct passwd *pwd = getpwuid(getuid());
 	return pwd->pw_name;
 }
@@ -407,17 +410,10 @@ int main(){
 	printf("\033[32m[Enze Shell] version: v1.0\033[0m\n");
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
-	int result = 0;
 	while(1) {
 		char line[MAXN];
 		printf("\033[34m%s\033[37m %% ", getMainPath());
-		char *tmp = fgets(line, MAXN, stdin);
-		if (!tmp) {
-			if (result == 1) {
-				result = 0;
-				continue;
-			}
-			printf("bad: %s", tmp);
+		if (!fgets(line, MAXN, stdin)) {
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
 		}
@@ -431,7 +427,7 @@ int main(){
 			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
 			break;
 		}
-		result = commandExecute(line);
+		int result = commandExecute(line);
 	}
 	return 0;
 }
