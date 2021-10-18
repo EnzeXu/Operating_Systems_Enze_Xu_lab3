@@ -346,6 +346,7 @@ int commandExecute(char *line) {
 
 int pureExecute(char *argvOri[], int left, int right) {
 	char *argv[MAXN] = {};
+	int argc = right - left;
 	for (int i = left; i < right; ++i) {
 		argv[i - left] = argvOri[i];
 	}
