@@ -457,10 +457,14 @@ int main(){
 			free(line);
 			break;
 		}
-		int result = commandExecute(line);
-		if (strlen(line) > 1) {
-			add_history(line);
+		length = strlen(line);
+		for (int i = 0; i < length; ++i) {
+			if (line[i] != ' ' && line[i] != '\n') {
+				add_history(line);
+				break;
+			}
 		}
+		int result = commandExecute(line);
 		free(line);
 	}
 	return 0;
