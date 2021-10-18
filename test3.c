@@ -137,7 +137,7 @@ int main() {
 	char a[100] = "env";
 	char b[100] = "|";
 	char c[100] = "grep";
-	char d[100] = "lab3";
+	char d[100] = "/bin";
 	char *argv[10] = {a, b, c, d};
 	//char lines[1000][1000] = {"env", "|", "grep", "/bin"};
 	//char **argv = lines;
