@@ -41,7 +41,7 @@ void readHistory(void) {
 	fscanf(fp, "%d", &n);
 	history_count = n;
 	if (n == 0) {
-		history_id_start = -1;
+		history_id_start = 1;
 		return;
 	}
 	char c;
@@ -49,8 +49,7 @@ void readHistory(void) {
 		fscanf(fp, "%d", &history_id[i]);
 		c = fgetc(fp); 
 		fgets(history_commands[i], MAXN, fp);
-		printf("%d %s", history_id[i], history_commands[i]);
-		//printf("n = %d\n", n);
+		//printf("%d %s", history_id[i], history_commands[i]);
 	}
 	history_id_start = history_id[0];
 	fclose(fp);
@@ -63,6 +62,15 @@ void eraseHistory(void) {
 	history_id_start = 1;
 	memset(history_id, 0, sizeof(history_id));
 	memset(history_commands, 0, sizeof(history_commands));
+	
+	FILE *fp = NULL;
+	fp = fopen(".myhistory", "w");
+	if (fp == NULL) {
+		perror("Error in opening file .myhistory");
+	  	return;
+	}
+	
+	fprintf(fp, "0\n");
 	return;
 }
 
@@ -77,7 +85,7 @@ int findHistory(char* arg) {
 	char tmp[MAXN];
 	strcpy(tmp, &arg[1]);
 	int num = atoi(tmp);
-	printf("string = '%s', tmp = '%s', num = %d\n", arg, tmp, num);
+	// printf("string = '%s', tmp = '%s', num = %d\n", arg, tmp, num);
 	if (history_count == 0) {
 		return -2; // empty history
 	}
@@ -89,6 +97,7 @@ int findHistory(char* arg) {
 
 // when executing "% history"
 void printHistory(int num) {
+	readHistory();
 	if (history_count <= num) {
 		for (int i = 0; i < history_count; ++i) {
 			printf("%5d  %s", history_id[i], history_commands[i]);
@@ -105,12 +114,14 @@ void printHistory(int num) {
 
 // after each execution
 void saveHistory(char *line) {
+	printf("save history: %s", line);
 	// to cache
 	history_id[history_count] = history_id_start + history_count;
 	strcpy(history_commands[history_count], line);
 	history_count ++;
 
 	// to file
+	
 	FILE *fp = NULL;
 	fp = fopen(".myhistory", "w");
 	if (fp == NULL) {
@@ -129,7 +140,9 @@ void saveHistory(char *line) {
 			fprintf(fp, "%d %s", history_id[i], history_commands[i]);
 		}
 	}
+	//fflush(fp);
 	fclose(fp);
+	
 	return;
 }
 
@@ -144,6 +157,8 @@ void printArgv(char *argv[]) { // test print function
 }
 
 void commandExecute(char *line) {
+	char line_origin[MAXN];
+	strcpy(line_origin, line);
 	char commandPathBin[MAXN] = "/bin/";
 	char commandPathUsrBin[MAXN] = "/usr/bin/";
 	char commandFullBin[MAXN];
@@ -186,12 +201,33 @@ void commandExecute(char *line) {
 
 	if (argc == 0) return; // empty command, do nothing, just print the prompt again
 	
+	// deal with !xyz history command
+	if (argc == 1 && argv[0][0] == '!') {
+		int findHistoryReturn = findHistory(argv[0]);
+		if (findHistoryReturn == -3) {
+			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
+			return;
+		} else if (findHistoryReturn == -2) {
+			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
+			return;
+		} else if (findHistoryReturn == -1) {
+			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", history_id_start, history_id_start + history_count - 1);
+			return;
+		}
+		printf("\033[32m[Enze Shell] executing command %d: %s\033[0m", history_id[findHistoryReturn], history_commands[findHistoryReturn]);
+		char tmp[MAXN];
+		strcpy(tmp, history_commands[findHistoryReturn]);
+		//printf("\033[0m");
+		commandExecute(tmp);
+		return;
+	}
+
 	// save the command into history
-	saveHistory(line);
+	saveHistory(line_origin);
 	
 	// deal with cd command
 	char pathUser[MAXN] = "";
-	if(strcmp(argv[0], "cd") == 0) {
+	if (strcmp(argv[0], "cd") == 0) {
 		if (argv[1] == NULL) return;
 		if (argv[1][0] == '~') {
 			argv[1][0] = '/';
@@ -213,7 +249,7 @@ void commandExecute(char *line) {
 	}
 	
 	// deal with history command
-	if(strcmp(argv[0], "history") == 0) {
+	if (strcmp(argv[0], "history") == 0) {
 		if (argc == 1) {
 			printHistory(MAX_HISTORY);
 		} else if (argc == 2) {
@@ -225,30 +261,11 @@ void commandExecute(char *line) {
 	}
 	
 	// deal with erase history command
-	if(argc == 2 && strcmp(argv[0], "erase") == 0 && strcmp(argv[0], "history") == 0) {
-		printf("\033[32m[Enze Shell] history is erasesd (%d removed)\033[0m\n", history_count);
+	if (argc == 2 && strcmp(argv[0], "erase") == 0 && strcmp(argv[1], "history") == 0) {
+		printf("\033[32m[Enze Shell] history is erasesd (%d removed)\033[0m\n", (history_count > MAX_HISTORY)? MAX_HISTORY: history_count);
 		eraseHistory();
 		return;
-	}
-	
-	// deal with !xyz history command
-	if(argc == 1 && argv[0][0] == '!') {
-		int findHistoryReturn = findHistory(argv[0]);
-		if (findHistoryReturn == -3) {
-			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
-			return;
-		} else if (findHistoryReturn == -2) {
-			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
-			return;
-		} else if (findHistoryReturn == -1) {
-			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", history_id_start, history_id_start + history_count - 1);
-			return;
-		}
-		printf("\033[32m[Enze Shell] executing command !%d: \"%s\"\033[0m\n", history_id[findHistoryReturn], history_commands[findHistoryReturn]);
-		commandExecute(history_commands[findHistoryReturn]);
-		return;
-	}
-	
+	}	
 	
 	// check if the command is available
 	/*
@@ -325,10 +342,12 @@ int main(){
 			break;
 		}
 		if (strcmp(line, "exit\n") == 0) {
+			saveHistory(line);
 			printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
 			continue;
 		}
 		if (strcmp(line, "exit()\n") == 0) {
+			saveHistory(line);
 			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
 			break;
 		}
