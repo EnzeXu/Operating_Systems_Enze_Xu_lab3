@@ -19,10 +19,48 @@ void printArgv(char *argv[]) { // test print function
 }
 
 
-int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
-	printf("\nCommand:\n%d %d %d\n", left, right, flagBackgroundExecution);
-	printArgv(argvOri);
-	return 0;
+//int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+//	printf("\nCommand:\n%d %d %d\n", left, right, flagBackgroundExecution);
+//	printArgv(argvOri);
+//	return 0;
+//}
+
+void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+	// printf("hello\n");
+	char *argv[MAXN] = {};
+	for (int i = left; i < right; ++i) {
+		// printf("copy argvOri[%d] to argv[%d]\n", i, i - left);
+		argv[i - left] = argvOri[i];
+	}
+
+	argv[right] = NULL;
+	
+	//printf("%d %d %d\n", left, right, flagBackgroundExecution);
+	//printArgv(argv);
+	// fork
+	pid_t pid, wait_pid;
+	int status;
+	pid = fork();
+	if (pid == 0) {
+	// printf("command = %s\n", commandFull);
+		int execvp_return = execvp(argv[0], argv);
+		if (execvp_return < 0) {
+			perror("\033[32m[Enze Shell] child failed\033[0m");
+			printf("\033[0m");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if (flagBackgroundExecution == 1) { // iff receive an '&', skip waitpid
+		printf("\033[32m[Enze Shell] child pid = %d\033[0m\n", pid);
+		return ;
+	}
+	wait_pid = waitpid(pid, &status, 0);
+	// printf("waitpid return %d\n", wait_pid);
+	if (wait_pid == -1) {
+		printf("\033[32m[Enze Shell] parent process cannot wait any more, return\033[0m\n");
+	}
+	return;
 }
 
 
