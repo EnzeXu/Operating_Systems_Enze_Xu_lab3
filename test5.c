@@ -433,8 +433,8 @@ int main(){
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
 	while(1) {
 		//char line[MAXN];
-		//printf("\033[34m%s\033[37m %% ", getMainPath());
-		char *line = readline("\033[34m%s\033[37m %% ", getMainPath());
+		printf("\033[34m%s\033[37m %% ", getMainPath());
+		char *line = readline("");
 		if (!line) {
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
