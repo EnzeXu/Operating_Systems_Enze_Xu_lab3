@@ -1,8 +1,8 @@
 //
-//  prog2.c
-//  prog2
+//  prog3.c
+//  prog3
 //
-//  Created by ENZE XU on 2021/9/25.
+//  Created by ENZE XU on 2021/10/17.
 //
 
 #include <stdio.h>
@@ -16,9 +16,9 @@
 #include <sys/wait.h>
 #include <pwd.h>
 
-#define MAX_HISTORY 20
+#define MAX_HISTORY 100
 #define MAX_HISTORY_SAVE 1000
-#define MAXN 10000
+#define MAXN 1000
 
 void quitHandler(int);
 char * getMainPath(void);
@@ -119,7 +119,7 @@ void printHistory(int num) {
 
 // after each execution
 void saveHistory(char *line) {
-	printf("save history: %s", line);
+	// printf("save history: %s", line);
 	// to cache
 	history_id[history_count] = history_id_start + history_count;
 	strcpy(history_commands[history_count], line);

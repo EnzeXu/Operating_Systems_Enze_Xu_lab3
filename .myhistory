@@ -1,22 +1,8 @@
 0
-
-3 history
-4 !2
-5 ls
+1 history
+2 history
+3 echo "hello"
+4 history
+5 git 
 6 history
-7 !3
-8 history
-9 !2
-10 ls
-11 history
-12 ls
-13 !8
-14 history
-15 history
-16 ls
-17 exit()
-18 ls
-19 history
-20 history
-21 history
-22 exit()
+7 exit()
