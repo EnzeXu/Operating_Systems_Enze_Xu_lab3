@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include <memory.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <pwd.h>
 
 void printArgv(char *argv[]) { // test print function
 	int i = 0;
@@ -71,7 +75,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		dup2(f_des[0], STDIN_FILENO);
 		close(f_des[0]);
 		printf("Errors occur in pipe, please check your input and try again!\n");
-		result = -1
+		result = -1;
 	} else if (pipeSeat < right - 1){
 		close(fds[1]);
 		dup2(fds[0], STDIN_FILENO);
