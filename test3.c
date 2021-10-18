@@ -9,6 +9,10 @@
 #include <sys/wait.h>
 #include <pwd.h>
 
+#define MAX_HISTORY 100
+#define MAX_HISTORY_SAVE 1000
+#define MAXN 1000
+
 void printArgv(char *argv[]) { // test print function
 	int i = 0;
 	while(argv[i] != NULL) {
@@ -25,7 +29,7 @@ void printArgv(char *argv[]) { // test print function
 //	return 0;
 //}
 
-void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
 	// printf("hello\n");
 	char *argv[MAXN] = {};
 	for (int i = left; i < right; ++i) {
