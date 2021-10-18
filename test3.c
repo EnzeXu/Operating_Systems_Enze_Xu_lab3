@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <memory.h>
 
 void printArgv(char *argv[]) { // test print function
 	int i = 0;
