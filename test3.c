@@ -2,62 +2,79 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+void printArgv(char *argv[]) { // test print function
+	int i = 0;
+	while(argv[i] != NULL) {
+		printf("argv[%d] %s (length = %ld)\n", i, argv[i], strlen(argv[i]));
+		i ++;
+	}
+	printf("argv[%d] NULL\n", i);
+}
 
-int callCommandWithPipe(char *argv[], int left, int right) {
-	if (left >= right) return -1;
-	/* 判断是否有管道命令 */
-	int pipeIdx = -1;
-	for (int i=left; i<right; ++i) {
-		if (strcmp(commands[i], COMMAND_PIPE) == 0) {
-			pipeIdx = i;
+
+void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecution) {
+	printf("\nCommand:\n%d %d %d\n", left, right, flagBackgroundExecution);
+	printArgv(argv);
+	return;
+}
+
+
+int commandExecutePipe(char *argv[], int left, int right) {
+	printf("commandExecutePipe: [%d, %d)", left, right);
+	
+	if (left >= right) return 1;
+	
+	int pipeSeat = -1;
+	for (int i = left; i < right; ++i) {
+		if (strcmp(argv[i], "|") == 0) {
+			pipeSeat = i;
 			break;
 		}
 	}
-	if (pipeIdx == -1) { // 不含有管道命令
-		return callCommandWithRedi(left, right);
-	} else if (pipeIdx+1 == right) { // 管道命令'|'后续没有指令，参数缺失
-		return ERROR_PIPE_MISS_PARAMETER;
+	
+	if (pipeSeat == -1) { // if there is no pipe
+		return pureExecute(argv, left, right);
+	}
+	
+	if (pipeSeat == right - 1) {
+		printf("no available command after \"|\"\n");
+		return -1;
 	}
 
-	/* 执行命令 */
-	int fds[2];
-	if (pipe(fds) == -1) {
-		return ERROR_PIPE;
+	int f_des[2];
+	if (pipe(f_des) == -1) {
+		perror("Pipe");
+		return -1;
 	}
-	int result = RESULT_NORMAL;
-	pid_t pid = vfork();
-	if (pid == -1) {
-		result = ERROR_FORK;
-	} else if (pid == 0) { // 子进程执行单个命令
-		close(fds[0]);
-		dup2(fds[1], STDOUT_FILENO); // 将标准输出重定向到fds[1]
-		close(fds[1]);
+	
+	int result = 0;
+	pid_t pid = fork();
+	if (pid == 0) { // child
+		close(f_des[0]);
+		dup2(f_des[1], fileno(stdout));
+		close(f_des[1]);
 
-		result = callCommandWithRedi(left, pipeIdx);
+		result = pureExecute(argv, left, pipeSeat);
 		exit(result);
-	} else { // 父进程递归执行后续命令
-		int status;
-		waitpid(pid, &status, 0);
-		int exitCode = WEXITSTATUS(status);
+	}
+	
+	// parent
+	int status;
+	pid_t wait_pid;
+	wait_pid = waitpid(pid, &status, 0);
 
-		if (exitCode != RESULT_NORMAL) { // 子进程的指令没有正常退出，打印错误信息
-			char info[4096] = {0};
-			char line[BUF_SZ];
-			close(fds[1]);
-			dup2(fds[0], STDIN_FILENO); // 将标准输入重定向到fds[0]
-			close(fds[0]);
-			while(fgets(line, BUF_SZ, stdin) != NULL) { // 读取子进程的错误信息
-				strcat(info, line);
-			}
-			printf("%s", info); // 打印错误信息
+	if (wait_pid == -1) { // 子进程的指令没有正常退出，打印错误信息
+		close(f_des[1]);
+		dup2(f_des[0], STDIN_FILENO);
+		close(f_des[0]);
+		printf("Errors occur in pipe, please try again!\n");
 
-			result = exitCode;
-		} else if (pipeIdx+1 < right){
-			close(fds[1]);
-			dup2(fds[0], STDIN_FILENO); // 将标准输入重定向到fds[0]
-			close(fds[0]);
-			result = callCommandWithPipe(pipeIdx+1, right); // 递归执行后续指令
-		}
+		result = -1
+	} else if (pipeSeat < right - 1){
+		close(fds[1]);
+		dup2(fds[0], STDIN_FILENO);
+		close(fds[0]);
+		result = commandExecutePipe(pipeSeat + 1, right); // 递归执行后续指令
 	}
 
 	return result;
@@ -65,5 +82,9 @@ int callCommandWithPipe(char *argv[], int left, int right) {
 
 
 int main() {
+	
+	char lines[1000][1000] = {"env", "|", "grep", "lab3"};
+	char *argv = lines;
+	commandExecutePipe(argv, 0, 4);
 	return 0;
 }
