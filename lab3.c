@@ -10,16 +10,128 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <memory.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <pwd.h>
 
+#define MAX_HISTORY 20
+#define MAX_HISTORY_SAVE 1000
 #define MAXN 10000
 
 void quitHandler(int);
 char * getMainPath(void);
 char * getUserName(void);
+
+int history_id_start;
+int history_count;
+int history_id[MAX_HISTORY_SAVE + 10] = {};
+char history_commands[MAX_HISTORY_SAVE + 10][MAXN] = {};
+
+// only when shell starts
+void readHistory(void) {
+	FILE *fp = NULL;
+	fp = fopen(".myhistory", "r");
+	if (fp == NULL) {
+		perror("Error in opening file .myhistory");
+	  	return;
+	}
+	int n;
+	fscanf(fp, "%d", &n);
+	history_count = n;
+	if (n == 0) {
+		history_id_start = -1;
+		return;
+	}
+	char c;
+	for (int i = 0; i < n; ++i) {
+		fscanf(fp, "%d", &history_id[i]);
+		c = fgetc(fp); 
+		fgets(history_commands[i], MAXN, fp);
+		printf("%d %s", history_id[i], history_commands[i]);
+		//printf("n = %d\n", n);
+	}
+	history_id_start = history_id[0];
+	fclose(fp);
+	return;
+}
+
+// when executing "% erase history"
+void eraseHistory(void) {
+	history_count = 0;
+	history_id_start = 1;
+	memset(history_id, 0, sizeof(history_id));
+	memset(history_commands, 0, sizeof(history_commands));
+	return;
+}
+
+// when executing "% !xyz"
+int findHistory(char* arg) {
+	int len = strlen(arg);
+	for (int i = 1; i < len; ++i) {
+		if (arg[i] < 48 || arg[i] > 57) {
+			return -3; // not !+[integer]
+		}
+	}
+	char tmp[MAXN];
+	strcpy(tmp, &arg[1]);
+	int num = atoi(tmp);
+	printf("string = '%s', tmp = '%s', num = %d\n", arg, tmp, num);
+	if (history_count == 0) {
+		return -2; // empty history
+	}
+	if (num < history_id_start || num > history_id_start + history_count - 1) {
+		return -1; // id not found
+	}
+	return num - history_id_start;
+}
+
+// when executing "% history"
+void printHistory(num) {
+	if (history_count <= num) {
+		for (int i = 0; i < history_count; ++i) {
+			printf("%5d  %s", history_id[i], history_commands[i]);
+		}
+	}
+	else {
+		for (int i = history_count - num; i < history_count; ++i) {
+			printf("%5d  %s", history_id[i], history_commands[i]);
+		}
+	}
+	return;
+}
+
+
+// after each execution
+void saveHistory(char *line) {
+	// to cache
+	history_id[history_count] = history_id_start + history_count;
+	strcpy(history_commands[history_count], line);
+	history_count ++;
+
+	// to file
+	FILE *fp = NULL;
+	fp = fopen(".myhistory", "w");
+	if (fp == NULL) {
+		perror("Error in opening file .myhistory");
+	  	return;
+	}
+	if (history_count <= MAX_HISTORY) {
+		fprintf(fp, "%d\n", history_count);
+		for (int i = 0; i < history_count; ++i) {
+			fprintf(fp, "%d %s", history_id[i], history_commands[i]);
+		}
+	}
+	else {
+		fprintf(fp, "%d\n", MAX_HISTORY);
+		for (int i = history_count - MAX_HISTORY; i < history_count; ++i) {
+			fprintf(fp, "%d %s", history_id[i], history_commands[i]);
+		}
+	}
+	fclose(fp);
+	return;
+}
 
 
 void printArgv(char *argv[]) { // test print function
@@ -96,8 +208,47 @@ void commandExecute(char *line) {
 		if (chdir_return ==  -1) perror("cd");
 		return;
 	}
-
+	
+	// deal with history command
+	if(strcmp(argv[0], "history") == 0) {
+		if (argc == 1) {
+			printHistory(MAX_HISTORY);
+		} else if (argc == 2) {
+			printHistory(MAX_HISTORY);
+		} else {
+			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
+		}
+		return;
+	}
+	
+	// deal with erase history command
+	if(argc == 2 && strcmp(argv[0], "erase") == 0 && strcmp(argv[0], "history") == 0) {
+		printf("\033[32m[Enze Shell] history is erasesd (%d removed)\033[0m\n", history_count);
+		eraseHistory();
+		return;
+	}
+	
+	// deal with !xyz history command
+	if(argc == 1 && argv[0][0] == '!') {
+		int findHistoryReturn = findHistory(argv[0]);
+		if (findHistoryReturn == -3) {
+			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
+			return;
+		} else if (findHistoryReturn == -2) {
+			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
+			return;
+		} else if (findHistoryReturn == -1) {
+			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", history_id_start, history_id_start + history_count - 1);
+			return;
+		}
+		printf("\033[32m[Enze Shell] executing command !%d: \"%s\"\033[0m\n", history_id[findHistoryReturn], history_commands[findHistoryReturn]);
+		commandExecute(history_commands[findHistoryReturn]);
+		return;
+	}
+	
+	
 	// check if the command is available
+	/*
 	strcpy(commandFullBin, commandPathBin);
 	strcat(commandFullBin, argv[0]);
 	strcpy(commandFullUsrBin, commandPathUsrBin);
@@ -116,6 +267,7 @@ void commandExecute(char *line) {
 		printf("\033[32m[Enze Shell] %s: command not found\033[0m\n", argv[0]);
 		return;
 	}
+	*/
 	
 
 	// fork
@@ -158,7 +310,7 @@ int main(){
 	signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
 	time_t t;
 	time(&t);
-	printf("\033[32m[Enze Shell] version: v1.0\033[0m\n", ctime(&t));
+	printf("\033[32m[Enze Shell] version: v1.0\033[0m\n");
 	printf("\033[32m[Enze Shell] pid = %d\033[0m\n", getpid()); // if execute lab2 in lab2, can help to identify
 	printf("\033[32m[Enze Shell] start at (GMT) %s\033[0m", ctime(&t)); // GMT time
 	while(1) {
