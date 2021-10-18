@@ -77,9 +77,9 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 		printf("Errors occur in pipe, please check your input and try again!\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
-		close(fds[1]);
-		dup2(fds[0], STDIN_FILENO);
-		close(fds[0]);
+		close(f_des[1]);
+		dup2(f_des[0], STDIN_FILENO);
+		close(f_des[0]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
 
@@ -90,7 +90,7 @@ int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExec
 int main() {
 	
 	char lines[1000][1000] = {"env", "|", "grep", "lab3"};
-	char *argv = lines;
+	char **argv = lines;
 	commandExecutePipe(argv, 0, 4, 0);
 	return 0;
 }
