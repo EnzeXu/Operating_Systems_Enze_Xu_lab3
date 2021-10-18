@@ -41,6 +41,9 @@ int pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecutio
 	
 	printf("In pureExecute: %d %d %d\n", left, right, flagBackgroundExecution);
 	printArgv(argv);
+	
+	fflush(stdout);
+	
 	// fork
 	pid_t pid, wait_pid;
 	int status;
