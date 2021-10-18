@@ -1,46 +1,6 @@
-45
-1 history
-2 ls
+0
+0
+ls
+2 history
 3 history
-4 history 2
-5 echo "hello"
-6 ls
-7 history
-8 echo "hello"
-9 history
-10 history
-11 history
-12 cd ~
-13 ls
-14 cd workspace
-15 cd cs641
-16 cd Operating_Systems_Enze_Xu_lab3
-17 ls
-18 history
-19 git pull
-20 git config --global user.email "xue20@wfu.edu"
-21 exit()
-22 ls
-23 ls
-24 ls
-25 ls
-26 ls
-27 ls
-28 ls
-29 ls
-30 history
-31 emmm
-32 history
-33 history
-34 exit()
-35 ls
-36 history
-37 exit()
-38 ls
-39 history
-40 cat .myhistory | grep ls
-41 hsitory
-42 history
-43 history | wc -l
-44 cat .myhistory | grep history | wc -l
-45 cat .myhistory | grep history
+4 cat .myhistory | grep history
