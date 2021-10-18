@@ -19,7 +19,7 @@ void pureExecute(char *argvOri[], int left, int right, int flagBackgroundExecuti
 }
 
 
-int commandExecutePipe(char *argv[], int left, int right) {
+int commandExecutePipe(char *argv[], int left, int right, int flagBackgroundExecution) {
 	printf("commandExecutePipe: [%d, %d)", left, right);
 	
 	if (left >= right) return 1;
@@ -33,7 +33,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	}
 	
 	if (pipeSeat == -1) { // if there is no pipe
-		return pureExecute(argv, left, right);
+		return pureExecute(argv, left, right, flagBackgroundExecution);
 	}
 	
 	if (pipeSeat == right - 1) {
@@ -54,7 +54,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 		dup2(f_des[1], fileno(stdout));
 		close(f_des[1]);
 
-		result = pureExecute(argv, left, pipeSeat);
+		result = pureExecute(argv, left, pipeSeat, flagBackgroundExecution);
 		exit(result);
 	}
 	
@@ -63,18 +63,17 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	pid_t wait_pid;
 	wait_pid = waitpid(pid, &status, 0);
 
-	if (wait_pid == -1) { // 子进程的指令没有正常退出，打印错误信息
+	if (wait_pid == -1) { // error in child
 		close(f_des[1]);
 		dup2(f_des[0], STDIN_FILENO);
 		close(f_des[0]);
-		printf("Errors occur in pipe, please try again!\n");
-
+		printf("Errors occur in pipe, please check your input and try again!\n");
 		result = -1
 	} else if (pipeSeat < right - 1){
 		close(fds[1]);
 		dup2(fds[0], STDIN_FILENO);
 		close(fds[0]);
-		result = commandExecutePipe(pipeSeat + 1, right); // 递归执行后续指令
+		result = commandExecutePipe(argv, pipeSeat + 1, right, flagBackgroundExecution);
 	}
 
 	return result;
