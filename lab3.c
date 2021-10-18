@@ -98,13 +98,18 @@ int findHistory(char* arg) {
 // when executing "% history"
 void printHistory(int num) {
 	readHistory();
-	if (history_count <= num) {
-		for (int i = 0; i < history_count; ++i) {
+	if (num <= MAX_HISTORY && num <= history_count) {
+		for (int i = history_count - num; i < history_count; ++i) {
 			printf("%5d  %s", history_id[i], history_commands[i]);
 		}
 	}
-	else {
-		for (int i = history_count - num; i < history_count; ++i) {
+	else if (MAX_HISTORY <= num && MAX_HISTORY <= history_count) {
+		for (int i = history_count - MAX_HISTORY; i < history_count; ++i) {
+			printf("%5d  %s", history_id[i], history_commands[i]);
+		}
+	}
+	else if (history_count <= num && history_count <= MAX_HISTORY) {
+		for (int i = 0; i < history_count; ++i) {
 			printf("%5d  %s", history_id[i], history_commands[i]);
 		}
 	}
@@ -253,7 +258,15 @@ void commandExecute(char *line) {
 		if (argc == 1) {
 			printHistory(MAX_HISTORY);
 		} else if (argc == 2) {
-			printHistory(MAX_HISTORY);
+			int len = strlen(argv[1]);
+			for (int i = 0; i < len; ++i) {
+				if (arg[i] < 48 || arg[i] > 57) {
+					printf("\033[32m[Enze Shell] argv[1] of a history command should be a positive integer\033[0m\n");
+					return;
+				}
+			}
+			int num = atoi(argv[1]);
+			printHistory(num);
 		} else {
 			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
 		}
