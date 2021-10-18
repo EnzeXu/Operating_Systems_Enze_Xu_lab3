@@ -364,8 +364,8 @@ void commandExecute(char *line) {
 	
 	char ch;
 	
-	while((ch = getchar()) != '\n' && ch != EOF);
-	
+	while((ch = getchar()) != EOF);
+	while((ch = getchar()) != EOF);
 	return;
 }
 
