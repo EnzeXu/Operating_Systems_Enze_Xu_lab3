@@ -6,7 +6,8 @@
 #define MAXN 100
 
 char *getIp(void) {
-	char ipAddr[MAXN] = {};
+	char ipAddr[MAXN];
+	ipAddr[0] = '\0';
 	struct ifaddrs *ifAddrStruct = NULL;
 	void * tmpAddrPtr = NULL;
 	if (getifaddrs(&ifAddrStruct) != 0) {
