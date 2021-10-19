@@ -9,8 +9,9 @@ char *getIp(void) {
 	char *ipAddr = NULL;
 	struct ifaddrs *ifAddrStruct = NULL;
 	void * tmpAddrPtr = NULL;
+	char defaultIp[20] = "127.0.0.1";
 	if (getifaddrs(&ifAddrStruct) != 0) {
-		strcpy(ipAddr, "127.0.0.1");
+		ipAddr = defaultIp;
 	}
 	else {
 		struct ifaddrs *iter = ifAddrStruct;
