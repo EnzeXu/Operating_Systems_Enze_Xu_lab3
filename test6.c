@@ -11,7 +11,7 @@ char *getIp(void) {
 	void * tmpAddrPtr = NULL;
 	char defaultIp[20] = "127.0.0.1";
 	if (getifaddrs(&ifAddrStruct) != 0) {
-		ipAddr = defaultIp;
+		return defaultIp;
 	}
 	else {
 		struct ifaddrs *iter = ifAddrStruct;
@@ -31,6 +31,6 @@ char *getIp(void) {
 
 int main() {
 	char *x = getIp();
-	printf("%s", x);
+	printf("%s\n", x);
 	return 0;
 }
