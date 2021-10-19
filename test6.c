@@ -25,7 +25,7 @@ char *getIp(void) {
 			}
 			iter = iter->ifa_next;
 		}
-		freeifaddrs(ifAddrStruct);
+		//freeifaddrs(ifAddrStruct);
 	}
 	return ipAddr;
 }
