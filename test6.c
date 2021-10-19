@@ -6,8 +6,7 @@
 #define MAXN 100
 
 char *getIp(void) {
-	char ipAddr[MAXN];
-	ipAddr[0] = '\0';
+	char *ipAddr = NULL;
 	struct ifaddrs *ifAddrStruct = NULL;
 	void * tmpAddrPtr = NULL;
 	if (getifaddrs(&ifAddrStruct) != 0) {
@@ -20,20 +19,13 @@ char *getIp(void) {
 				tmpAddrPtr = &((struct sockaddr_in *)iter->ifa_addr)->sin_addr;
 				char addressBuffer[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-				if (strlen(ipAddr) + strlen(addressBuffer) < MAXN - 1) {
-					printf("%s\n", addressBuffer);
-					strcpy(ipAddr, addressBuffer);
-				} else {
-					strcpy(ipAddr, "127.0.0.1");
-					break;
-				}
+				ipAddr = addressBuffer;
 			}
 			iter = iter->ifa_next;
 		}
 		freeifaddrs(ifAddrStruct);
 	}
-	char *tmp = ipAddr;
-	return tmp;
+	return ipAddr;
 }
 
 int main() {
