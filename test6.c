@@ -15,7 +15,7 @@ char *getIp(void) {
 			tmpAddrPtr = &((struct sockaddr_in *)iter->ifa_addr)->sin_addr;
 			char addressBuffer[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-			if (strlen(ipAddr) + strlen(addressBuffer) < MAX_LENGTH - 1) {
+			if (strlen(ipAddr) + strlen(addressBuffer) < MAXN - 1) {
 				strcpy(ipAddr, addressBuffer);
 			} else {
 				strcpy(ipAddr, "127.0.0.1");
@@ -25,7 +25,8 @@ char *getIp(void) {
 		iter = iter->ifa_next;
 	}
 	freeifaddrs(ifAddrStruct);
-	return ipAddr;
+	char *tmp = ipAddr
+	return tmp;
 }
 
 int main() {
