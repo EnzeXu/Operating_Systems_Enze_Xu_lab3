@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
-#include <cstring>
+#include <string.h>
 
 #define MAX_LENGTH 254
 
