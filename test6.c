@@ -9,22 +9,27 @@ char *getIp(void) {
 	char ipAddr[MAXN] = {};
 	struct ifaddrs *ifAddrStruct = NULL;
 	void * tmpAddrPtr = NULL;
-	struct ifaddrs *iter = ifAddrStruct;
-	while (iter != NULL) {
-		if (iter->ifa_addr->sa_family == AF_INET) {
-			tmpAddrPtr = &((struct sockaddr_in *)iter->ifa_addr)->sin_addr;
-			char addressBuffer[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-			if (strlen(ipAddr) + strlen(addressBuffer) < MAXN - 1) {
-				strcpy(ipAddr, addressBuffer);
-			} else {
-				strcpy(ipAddr, "127.0.0.1");
-				break;
-			}
-		}
-		iter = iter->ifa_next;
+	if (getifaddrs(&ifAddrStruct) != 0) {
+		strcpy(ipAddr, "127.0.0.1");
 	}
-	freeifaddrs(ifAddrStruct);
+	else {
+		struct ifaddrs *iter = ifAddrStruct;
+		while (iter != NULL) {
+			if (iter->ifa_addr->sa_family == AF_INET) {
+				tmpAddrPtr = &((struct sockaddr_in *)iter->ifa_addr)->sin_addr;
+				char addressBuffer[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+				if (strlen(ipAddr) + strlen(addressBuffer) < MAXN - 1) {
+					strcpy(ipAddr, addressBuffer);
+				} else {
+					strcpy(ipAddr, "127.0.0.1");
+					break;
+				}
+			}
+			iter = iter->ifa_next;
+		}
+		freeifaddrs(ifAddrStruct);
+	}
 	char *tmp = ipAddr;
 	return tmp;
 }
