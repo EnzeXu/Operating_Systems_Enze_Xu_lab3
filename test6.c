@@ -19,7 +19,9 @@ char *getIp(void) {
 				tmpAddrPtr = &((struct sockaddr_in *)iter->ifa_addr)->sin_addr;
 				char addressBuffer[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-				ipAddr = addressBuffer;
+				if (strlen(addressBuffer) > 0) {
+					ipAddr = addressBuffer;
+				}
 			}
 			iter = iter->ifa_next;
 		}
