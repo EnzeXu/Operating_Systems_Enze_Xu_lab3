@@ -249,7 +249,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	}
 	
 	if (pipeSeat == right - 1) {
-		printf("\n\033[32m[Enze Shell] no available command after \"|\"\033[0m\n");
+		printf("\033[32m[Enze Shell] no available command after \"|\"\033[0m\n");
 		return -1;
 	}
 
@@ -280,7 +280,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
 		close(f_des[1]);
-		printf("\n\033[32m[Enze Shell] errors occur in pipe, please check your input and try again!\033[0m\n");
+		printf("\033[32m[Enze Shell] errors occur in pipe, please check your input and try again!\033[0m\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
 		//close(f_des[1]);
