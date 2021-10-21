@@ -432,7 +432,7 @@ int main(){
 	time_t t;
 	time(&t);
 	readHistory();
-	printf("\033[32m[Enze Shell] version     : v1.0\033[0m\n");
+	printf("\033[32m[Enze Shell] version     : v3.24\033[0m\n");
 	printf("\033[32m[Enze Shell] pid         : %d\033[0m\n", getpid()); // if executing shell in shell, it can help to identify
 	printf("\033[32m[Enze Shell] time        : (GMT) %s\033[0m", ctime(&t)); // GMT time
 	printf("\033[32m[Enze Shell] max_history : %d\033[0m\n", MAX_HISTORY);
