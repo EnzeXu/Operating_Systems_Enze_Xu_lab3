@@ -44,7 +44,7 @@ char *getMainPath(void) {
 	return mainPath;
 }
 
-// mine is "/home/csuser/" but if Dr. Canas tests other user...emmm...anyway, let me figure it out
+// mine is "/home/csuser/" but if Dr. Canas tests other user and inputs cd ~/xxx...emmm...anyway, let me figure it out
 char *getUserName(void) {
 	struct passwd *pwd = getpwuid(getuid());
 	return pwd->pw_name;
