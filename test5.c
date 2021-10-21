@@ -1,5 +1,5 @@
-//  lab3.c
-//  Created by ENZE XU on 2021/10/17.
+// lab3.c
+// Created by ENZE XU on 2021/10/17.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +56,7 @@ void readHistory(void) {
 	fp = fopen(".myhistory", "r");
 	if (fp == NULL) {
 		perror("Error in opening file .myhistory");
-	  	return;
+		return;
 	}
 	int n;
 	fscanf(fp, "%d", &n);
@@ -88,7 +88,7 @@ void eraseHistory(void) {
 	fp = fopen(".myhistory", "w");
 	if (fp == NULL) {
 		perror("Error in opening file .myhistory");
-	  	return;
+		return;
 	}
 	
 	fprintf(fp, "0\n");
@@ -151,7 +151,7 @@ void saveHistory(char *line) {
 	fp = fopen(".myhistory", "w");
 	if (fp == NULL) {
 		perror("Error in opening file .myhistory");
-	  	return;
+		return;
 	}
 	if (history_count <= MAX_HISTORY) {
 		fprintf(fp, "%d\n", history_count);
@@ -262,8 +262,9 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	int result = 0;
 	pid_t pid = fork();
 	if (pid == 0) { // child
-		close(f_des[0]);
+		// close(f_des[0]);
 		dup2(f_des[1], fileno(stdout));
+		close(f_des[0]);
 		close(f_des[1]);
 		result = pureExecute(argv, left, pipeSeat);
 		exit(result);
@@ -275,15 +276,17 @@ int commandExecutePipe(char *argv[], int left, int right) {
 	wait_pid = waitpid(pid, &status, 0);
 
 	if (wait_pid == -1) { // error in child
-		close(f_des[1]);
+		//close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
+		close(f_des[1]);
 		printf("\n\033[32m[Enze Shell] errors occur in pipe, please check your input and try again!\033[0m\n");
 		result = -1;
 	} else if (pipeSeat < right - 1){
-		close(f_des[1]);
+		//close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
+		close(f_des[1]);
 		result = commandExecutePipe(argv, pipeSeat + 1, right);
 	}
 	return result;
@@ -378,7 +381,7 @@ int commandExecute(char *line) {
 			// printf("newpath: %s\n", argv[1]);
 		}
 		int chdir_return = chdir(argv[1]);
-		if (chdir_return ==  -1) perror("cd");
+		if (chdir_return == -1) perror("cd");
 		return 0;
 	}
 	
@@ -393,11 +396,11 @@ int commandExecute(char *line) {
 	int status;
 	pid = fork();
 	if (pid == 0) {
-		int in_f = dup(STDIN_FILENO);
-		int out_f = dup(STDOUT_FILENO);
+		int in_f = dup(fileno(stdin));
+		int out_f = dup(fileno(stdout));
 		int result = commandExecutePipe(argv, 0, argc);
-		dup2(in_f, STDIN_FILENO);
-		dup2(out_f, STDOUT_FILENO);
+		dup2(in_f, fileno(stdin));
+		dup2(out_f, fileno(stdout));
 		exit(result);
 	}
 
