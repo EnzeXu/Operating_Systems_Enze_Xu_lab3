@@ -3,15 +3,12 @@
  
 int main(void)
 {
-        int c;
- 
-        system("stty raw");
-        c = getchar();
-        system("stty -raw");
- 
-        printf( "\nyou input: %c", c);
- 
-        printf( "\n" );
- 
-        return 0;
+		int c;
+		while (1) {
+			//system("stty raw");
+			c = getchar();
+			//system("stty -raw");
+			printf( "\nyou input: %c\n", c);
+		}
+		return 0;
 }
