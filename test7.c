@@ -83,6 +83,9 @@ int main(void)
 		}
 		else if (c == 8) {
 			if (commandLength == 0) {
+				for (int i = 0; i < 2; ++i) {
+					printf("\b \b");
+				}
 			}
 			else {
 				commandLength -= 1;
