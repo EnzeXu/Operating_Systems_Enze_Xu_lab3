@@ -5,10 +5,12 @@ int main(void)
 {
 		int c;
 		while (1) {
-			//system("stty raw");
+			printf("inputs: ");
+			system("stty raw");
 			c = getchar();
-			//system("stty -raw");
-			printf( "\nyou input: %c\n", c);
+			system("stty -raw");
+			printf( "%c%c%c", c, c, c);
+			c = getchar();
 		}
 		return 0;
 }
