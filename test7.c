@@ -82,6 +82,16 @@ int main(void)
 			}
 		}
 		else if (c == 8) {
+			if (commandLength == 0) {
+			}
+			else {
+				commandLength -= 1;
+				commandLine[strlen(commandLine) - 1] = '\0';
+				for (int i = 0; i < 3; ++i) {
+					printf("\b \b");
+				}
+			}
+			arrowFlag = 1;
 		}
 		else if (c == 13) {
 			for (int i = 0; i < 2; ++i) {
