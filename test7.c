@@ -29,7 +29,7 @@ int main(void)
 	int z = 10;
 	int arrowFlag = 0;
 	
-	while (z--) {
+	while (1) {
 		if (!arrowFlag) {
 			printf("inputs: ");
 		}
@@ -85,6 +85,9 @@ int main(void)
 				printf("\b \b");
 			}
 			printf("\nDealing with command '%s'\n", commandLine);
+			if (strcmp(commandLine, "exit()") == 0) {
+				break;
+			}
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
 			arrowFlag = 0;
