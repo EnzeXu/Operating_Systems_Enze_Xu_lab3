@@ -57,6 +57,8 @@ int main(void)
 					printf("\b \b");
 				}
 				arrowStatus += 1;
+				if (arrowStatus > 10) arrowStatus = 10;
+				memset(commandLine, 0, sizeof(commandLine));
 				strcat(commandLine, historyTest[arrowStatus]);
 				printf("%s", historyTest[arrowStatus]);
 				commandLength = strlen(historyTest[arrowStatus]);
@@ -71,6 +73,7 @@ int main(void)
 				}
 				else {
 					arrowStatus -= 1;
+					memset(commandLine, 0, sizeof(commandLine));
 					strcat(commandLine, historyTest[arrowStatus]);
 					printf("%s", historyTest[arrowStatus]);
 					commandLength = strlen(historyTest[arrowStatus]);
