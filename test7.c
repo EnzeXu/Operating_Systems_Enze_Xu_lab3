@@ -11,7 +11,8 @@ int main(void)
 	int arrowStatus = 0;
 	int tmpLength = 0;
 	char c;
-	while (1) {
+	int z = 10;
+	while (z--) {
 		printf("inputs: ");
 		system("stty raw");
 		system("stty -echo");
