@@ -16,6 +16,7 @@ int main(void)
 		system("stty raw");
 		system("stty -echo");
 		c = getchar();
+		printf("c = '%c' ", c);
 		system("stty -raw");
 		system("stty echo");
 		if (c == '^') {
@@ -23,6 +24,9 @@ int main(void)
 			c1 = getchar();
 			c2 = getchar();
 			c3 = getchar();
+			printf("c1 = '%c' ", c1);
+			printf("c2 = '%c' ", c2);
+			printf("c3 = '%c' ", c3);
 			if (c3 == 'A') {
 				for (int i = 0; i < tmpLength; ++i) {
 					printf("\b");
@@ -38,7 +42,6 @@ int main(void)
 				}
 				if (arrowStatus == 0 || arrowStatus == 1) {
 					tmpLength = 0;
-					continue;
 				}
 				arrowStatus -= 1;
 				char pre[MAXN] = "previous";
