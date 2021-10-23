@@ -44,11 +44,13 @@ int main(void)
 				if (arrowStatus == 0 || arrowStatus == 1) {
 					tmpLength = 0;
 				}
-				arrowStatus -= 1;
-				char pre[MAXN] = "previous";
-				printf("%s %03d", pre, arrowStatus);
-				tmpLength = strlen(pre) + 4;
-				arrowFlag = 1;
+				else {
+					arrowStatus -= 1;
+					char pre[MAXN] = "previous";
+					printf("%s %03d", pre, arrowStatus);
+					tmpLength = strlen(pre) + 4;
+					arrowFlag = 1;
+				}
 			}
 		}
 		system("stty -raw");
