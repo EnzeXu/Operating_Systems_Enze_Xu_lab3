@@ -13,7 +13,7 @@ int main(void)
 	int commandLength = 0;
 	char historyTest[MAXN][MAXN] = {
 		"previous command 0",
-		"previous command 1,
+		"previous command 1",
 		"previous command 2",
 		"previous command 3",
 		"previous command 4",
