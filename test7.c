@@ -29,11 +29,8 @@ int main(void)
 				}
 				arrowStatus += 1;
 				char pre[MAXN] = "previous";
-				char tmp[MAXN] = {0};
-				itoa(arrowStatus, tmp, 10);
-				strcat(pre, tmp);
-				printf("%s", pre);
-				tmpLength = strlen(pre);
+				printf("%s %3d", pre, arrowStatus);
+				tmpLength = strlen(pre) + 4;
 			}
 			else if (c3 == 'B') {
 				for (int i = 0; i < tmpLength; ++i) {
@@ -45,11 +42,8 @@ int main(void)
 				}
 				arrowStatus -= 1;
 				char pre[MAXN] = "previous";
-				char tmp[MAXN] = {0};
-				itoa(arrowStatus, tmp, 10);
-				strcat(pre, tmp);
-				printf("%s", pre);
-				tmpLength = strlen(pre);
+				printf("%s %3d", pre, arrowStatus);
+				tmpLength = strlen(pre) + 4;
 			}
 		}
 		//printf( "%c%c%c", c, c, c);
