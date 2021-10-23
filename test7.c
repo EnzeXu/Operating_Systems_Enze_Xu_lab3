@@ -17,7 +17,7 @@ int main(void)
 		system("stty raw");
 		system("stty -echo");
 		c = getchar();
-		printf("c = '%c' ", c);
+		printf("c = '%c' ascii = '%d'", c, c);
 		system("stty -raw");
 		system("stty echo");
 		if (c == '^') {
