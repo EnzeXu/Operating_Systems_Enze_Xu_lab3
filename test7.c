@@ -12,14 +12,15 @@ int main(void)
 	int tmpLength = 0;
 	char c;
 	int z = 10;
+	int arrowFlag = 0;
 	while (z--) {
-		printf("inputs: ");
+		if (!arrowFlag) {
+			printf("inputs: ");
+		}
 		system("stty raw");
 		system("stty -echo");
 		c = getchar();
-		printf("c = '%c' ascii = '%d'", c, c);
-		system("stty -raw");
-		system("stty echo");
+		printf("c ascii = '%d' ", c);
 		if (c == 27) {
 			char c1, c2, c3;
 			c1 = getchar();
@@ -32,10 +33,11 @@ int main(void)
 				}
 				arrowStatus += 1;
 				char pre[MAXN] = "previous";
-				printf("%s %3d", pre, arrowStatus);
+				printf("%s %03d", pre, arrowStatus);
 				tmpLength = strlen(pre) + 4;
+				arrowFlag = 1;
 			}
-			else if (c3 == 'B') {
+			else if (c2 == 'B') {
 				for (int i = 0; i < tmpLength; ++i) {
 					printf("\b");
 				}
@@ -44,10 +46,13 @@ int main(void)
 				}
 				arrowStatus -= 1;
 				char pre[MAXN] = "previous";
-				printf("%s %3d", pre, arrowStatus);
+				printf("%s %03d", pre, arrowStatus);
 				tmpLength = strlen(pre) + 4;
+				arrowFlag = 1;
 			}
 		}
+		system("stty -raw");
+		system("stty echo");
 		//printf( "%c%c%c", c, c, c);
 		//c = getchar();
 	}
