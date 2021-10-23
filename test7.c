@@ -20,13 +20,13 @@ int main(void)
 		system("stty raw");
 		system("stty -echo");
 		c = getchar();
-		printf("c ascii = '%d' ", c);
+		//printf("c ascii = '%d' ", c);
 		if (c == 27) {
 			char c1, c2, c3;
 			c1 = getchar();
 			c2 = getchar();
-			printf("c1 = '%c' ", c1);
-			printf("c2 = '%c' ", c2);
+			//printf("c1 = '%c' ", c1);
+			//printf("c2 = '%c' ", c2);
 			if (c2 == 'A') {
 				for (int i = 0; i < tmpLength; ++i) {
 					printf("\b");
