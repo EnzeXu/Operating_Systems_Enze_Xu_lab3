@@ -46,7 +46,7 @@ int main(void)
 			c1 = getchar();
 			c2 = getchar();
 			system("stty -raw");
-			for (int i = 0; i < 3; ++i) {
+			for (int i = 0; i < 4; ++i) {
 				printf("\b \b");
 			}
 			//system("stty echo");
@@ -80,7 +80,7 @@ int main(void)
 		}
 		else if (c == 8) {
 		}
-		else if (c == 10) {
+		else if (c == 13) {
 			printf("Dealing with command '%s'\n", commandLine);
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
