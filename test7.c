@@ -34,19 +34,22 @@ int main(void)
 			printf("inputs: ");
 		}
 		system("stty raw");
-		system("stty -echo");
+		//system("stty -echo");
 		c = getchar();
 		system("stty -raw");
-		system("stty echo");
+		//system("stty echo");
 		//printf("c ascii = '%d' ", c);
 		if (c == 27) {
 			char c1, c2, c3;
 			system("stty raw");
-			system("stty -echo");
+			//system("stty -echo");
 			c1 = getchar();
 			c2 = getchar();
 			system("stty -raw");
-			system("stty echo");
+			for (int i = 0; i < 3; ++i) {
+				printf("\b \b");
+			}
+			//system("stty echo");
 			//printf("c1 = '%c' ", c1);
 			//printf("c2 = '%c' ", c2);
 			if (c2 == 'A') {
