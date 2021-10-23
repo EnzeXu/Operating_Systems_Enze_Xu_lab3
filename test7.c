@@ -81,7 +81,10 @@ int main(void)
 		else if (c == 8) {
 		}
 		else if (c == 13) {
-			printf("Dealing with command '%s'\n", commandLine);
+			for (int i = 0; i < 2; ++i) {
+				printf("\b \b");
+			}
+			printf("\nDealing with command '%s'\n", commandLine);
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
 			arrowFlag = 0;
