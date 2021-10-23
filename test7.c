@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 
 #define MAXN 100
@@ -28,7 +29,7 @@ int main(void)
 				}
 				arrowStatus += 1;
 				char pre[MAXN] = "previous";
-				char tmp[MAXN] = {};
+				char tmp[MAXN] = {0};
 				itoa(arrowStatus, tmp, 10);
 				strcat(pre, tmp);
 				printf("%s", pre);
@@ -44,7 +45,7 @@ int main(void)
 				}
 				arrowStatus -= 1;
 				char pre[MAXN] = "previous";
-				char tmp[MAXN] = {};
+				char tmp[MAXN] = {0};
 				itoa(arrowStatus, tmp, 10);
 				strcat(pre, tmp);
 				printf("%s", pre);
