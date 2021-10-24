@@ -571,7 +571,7 @@ int main(){
 			break;
 		}
 		else {
-			commandLine[strlen(commandLine)] = c;
+			commandLine[strlen(commandLine)] = c0;
 			commandLine[strlen(commandLine) + 1] = '\0';
 			commandLength += 1;
 			arrowFlag = 1;
