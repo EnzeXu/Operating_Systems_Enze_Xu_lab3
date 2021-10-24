@@ -15,7 +15,7 @@
 //#include <readline/readline.h>
 //#include <readline/history.h>
 
-#define MAX_HISTORY 100
+#define MAX_HISTORY 30
 #define MAX_HISTORY_SAVE 1000
 #define MAXN 1000
 
@@ -190,6 +190,31 @@ int pureExecute(char *argvOri[], int left, int right) {
 	}
 	argv[right] = NULL;
 	
+	
+	// deal with !xyz history command
+	if (argc == 1 && argv[0][0] == '!') {
+		int findHistoryReturn = findHistory(argv[0]);
+		if (findHistoryReturn == -3) {
+			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
+			return -1;
+		} else if (findHistoryReturn == -2) {
+			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
+			return -1;
+		} else if (findHistoryReturn == -1) {
+			printf("\033[32m[Enze Shell] xyz is out of range [%d, %d] in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - MAX_HISTORY)? (history_id_start + history_count - MAX_HISTORY): history_id_start, history_id_start + history_count - 1);
+			return -1;
+		}
+		char tmp_cmd[MAXN] = {};
+		strcpy(tmp_cmd, history_commands[findHistoryReturn]);
+		if (tmp_cmd[strlen(tmp_cmd) - 1] == '\n') tmp_cmd[strlen(tmp_cmd) - 1] = '\0';
+		printf("\033[32m[Enze Shell] command \"!%d\" equals to \"%s\"\033[0m\n", history_id[findHistoryReturn], tmp_cmd);
+		char tmp[MAXN];
+		strcpy(tmp, history_commands[findHistoryReturn]);
+		//printf("\033[0m");
+		commandExecute(tmp, 0);
+		return 0;
+	}
+	
 	// deal with history command
 	if (strcmp(argv[0], "history") == 0) {
 		if (argc == 1) {
@@ -293,7 +318,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 }
 
 // deal command
-int commandExecute(char *line) {
+int commandExecute(char *line, int saveFlag=1) {
 	char line_origin[MAXN];
 	strcpy(line_origin, line);
 	char commandPathBin[MAXN] = "/bin/";
@@ -338,32 +363,10 @@ int commandExecute(char *line) {
 
 	if (argc == 0) return 0; // empty command, do nothing, just print the prompt again
 	
-	// deal with !xyz history command
-	if (argc == 1 && argv[0][0] == '!') {
-		int findHistoryReturn = findHistory(argv[0]);
-		if (findHistoryReturn == -3) {
-			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
-			return -1;
-		} else if (findHistoryReturn == -2) {
-			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
-			return -1;
-		} else if (findHistoryReturn == -1) {
-			printf("\033[32m[Enze Shell] xyz is out of range [%d, %d] in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - MAX_HISTORY)? (history_id_start + history_count - MAX_HISTORY): history_id_start, history_id_start + history_count - 1);
-			return -1;
-		}
-		char tmp_cmd[MAXN] = {};
-		strcpy(tmp_cmd, history_commands[findHistoryReturn]);
-		if (tmp_cmd[strlen(tmp_cmd) - 1] == '\n') tmp_cmd[strlen(tmp_cmd) - 1] = '\0';
-		printf("\033[32m[Enze Shell] command \"!%d\" equals to \"%s\"\033[0m\n", history_id[findHistoryReturn], tmp_cmd);
-		char tmp[MAXN];
-		strcpy(tmp, history_commands[findHistoryReturn]);
-		//printf("\033[0m");
-		commandExecute(tmp);
-		return 0;
-	}
+
 
 	// save the command into history
-	saveHistory(line_origin);
+	if (saveFlag) saveHistory(line_origin);
 	
 	// deal with cd command
 	char pathUser[MAXN] = "";
@@ -444,7 +447,7 @@ int main(){
 	printf("\033[32m[Enze Shell] history     : %d\033[0m\n", history_count);
 	/*
 	while(1) {
-		char prompt[1000] = "\033[34m";
+		char prompt[MAXN] = "\033[34m";
 		strcat(prompt, getUserName());
 		strcat(prompt, ":");
 		strcat(prompt, getMainPath());
