@@ -494,8 +494,8 @@ int main(){
 		if (c0 == 27) {
 			system("stty raw");
 			//system("stty -echo");
-			c1 = getchar();
-			c2 = getchar();
+			//c1 = getchar();
+			//c2 = getchar();
 			system("stty -raw");
 			for (int i = 0; i < 4; ++i) {
 				printf("\b \b");
