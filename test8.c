@@ -35,7 +35,7 @@ void saveHistory(char *line);
 void printArgv(char *argv[]);
 int pureExecute(char *argvOri[], int left, int right);
 int commandExecutePipe(char *argv[], int left, int right);
-int commandExecute(char *line, int saveFlag=1);
+int commandExecute(char *line, int saveFlag);
 //void quitHandler(int);
 
 // get pwd
@@ -318,7 +318,7 @@ int commandExecutePipe(char *argv[], int left, int right) {
 }
 
 // deal command
-int commandExecute(char *line, int saveFlag=1) {
+int commandExecute(char *line, int saveFlag) {
 	char line_origin[MAXN];
 	strcpy(line_origin, line);
 	char commandPathBin[MAXN] = "/bin/";
@@ -478,7 +478,7 @@ int main(){
 			free(line);
 			break;
 		}
-		int result = commandExecute(line);
+		int result = commandExecute(line, 1);
 		free(line);
 	}
 	*/
@@ -579,7 +579,7 @@ int main(){
 				printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
 			}
 			else {
-				int result = commandExecute(commandLine);
+				int result = commandExecute(commandLine, 1);
 			}
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
