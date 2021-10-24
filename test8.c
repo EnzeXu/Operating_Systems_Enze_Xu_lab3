@@ -348,7 +348,7 @@ int commandExecute(char *line) {
 			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
 			return -1;
 		} else if (findHistoryReturn == -1) {
-			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - 1)? (history_id_start + history_count - 1): history_id_start, history_id_start + history_count - 1);
+			printf("\033[32m[Enze Shell] xyz is out of range [%d, %d] in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - MAX_HISTORY)? (history_id_start + history_count - MAX_HISTORY): history_id_start, history_id_start + history_count - 1);
 			return -1;
 		}
 		char tmp_cmd[MAXN] = {};
