@@ -275,7 +275,7 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 	}
 	
 	if (pipeSeat == -1) { // if there is no pipe
-		return pureExecute(argv, left, right);
+		return pureExecute(argv, left, right, recursionCount);
 	}
 	
 	if (pipeSeat == right - 1) {
@@ -296,7 +296,7 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 		dup2(f_des[1], fileno(stdout));
 		close(f_des[0]);
 		close(f_des[1]);
-		result = pureExecute(argv, left, pipeSeat);
+		result = pureExecute(argv, left, pipeSeat, recursionCount);
 		exit(result);
 	}
 	
