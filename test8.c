@@ -560,6 +560,7 @@ int main(){
 			}
 			// printf("\nDealing with command '%s'\n", commandLine);
 			strcat(commandLine, "\n");
+			printf("\n");
 			if (strcmp(commandLine, "exit()\n") == 0) {
 				saveHistory(commandLine);
 				printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
