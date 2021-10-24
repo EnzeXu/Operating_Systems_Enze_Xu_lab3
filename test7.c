@@ -7,8 +7,7 @@
 
 #define MAXN 1000
 
-int main(void)
-{
+int main() {
 	int arrowStatus = 0;
 	int commandLength = 0;
 	char historyTest[MAXN][MAXN] = {
