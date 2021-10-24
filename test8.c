@@ -510,9 +510,9 @@ int main(){
 				arrowStatus += 1;
 				if (arrowStatus > 10) arrowStatus = 10;
 				memset(commandLine, 0, sizeof(commandLine));
-				strcat(commandLine, history_commands[history_id_start + history_count - arrowStatus]);
-				printf("%s", history_commands[history_id_start + history_count - arrowStatus]);
-				commandLength = strlen(history_commands[history_id_start + history_count - arrowStatus]);
+				strcat(commandLine, history_commands[history_count - arrowStatus]);
+				printf("%s", history_commands[history_count - arrowStatus]);
+				commandLength = strlen(history_commands[history_count - arrowStatus]);
 				arrowFlag = 1;
 			}
 			else if (c2 == 'B') {
@@ -525,9 +525,9 @@ int main(){
 				else {
 					arrowStatus -= 1;
 					memset(commandLine, 0, sizeof(commandLine));
-					strcat(commandLine, history_commands[history_id_start + history_count - arrowStatus]);
-					printf("%s", history_commands[history_id_start + history_count - arrowStatus]);
-					commandLength = strlen(history_commands[history_id_start + history_count - arrowStatus]);
+					strcat(commandLine, history_commands[history_count - arrowStatus]);
+					printf("%s", history_commands[history_count - arrowStatus]);
+					commandLength = strlen(history_commands[history_count - arrowStatus]);
 					arrowFlag = 1;
 				}
 			}
