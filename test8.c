@@ -494,15 +494,15 @@ int main(){
 		if (c0 == 27) {
 			system("stty raw");
 			//system("stty -echo");
-			//c1 = getchar();
-			//c2 = getchar();
+			c1 = getchar();
+			c2 = getchar();
 			system("stty -raw");
 			for (int i = 0; i < 4; ++i) {
 				printf("\b \b");
 			}
 			//system("stty echo");
-			printf("c1 = '%c' ", c1);
-			printf("c2 = '%c' ", c2);
+			//printf("c1 = '%c' ", c1);
+			//printf("c2 = '%c' ", c2);
 			if (c2 == 'A') {
 				for (int i = 0; i < commandLength; ++i) {
 					printf("\b \b");
@@ -510,9 +510,12 @@ int main(){
 				arrowStatus += 1;
 				if (arrowStatus > 10) arrowStatus = 10;
 				memset(commandLine, 0, sizeof(commandLine));
-				strcat(commandLine, history_commands[history_count - arrowStatus]);
-				printf("%s", history_commands[history_count - arrowStatus]);
-				commandLength = strlen(history_commands[history_count - arrowStatus]);
+				char tmp[MAXN] = {};
+				strcpy(tmp, history_commands[history_count - arrowStatus]);
+				if (tmp[strlen(tmp) - 1] == '\n') tmp[strlen(tmp) - 1] = '\0';
+				strcat(commandLine, tmp);
+				printf("%s", tmp);
+				commandLength = strlen(tmp);
 				arrowFlag = 1;
 			}
 			else if (c2 == 'B') {
@@ -524,10 +527,14 @@ int main(){
 				}
 				else {
 					arrowStatus -= 1;
+					if (arrowStatus > 10) arrowStatus = 10;
 					memset(commandLine, 0, sizeof(commandLine));
-					strcat(commandLine, history_commands[history_count - arrowStatus]);
-					printf("%s", history_commands[history_count - arrowStatus]);
-					commandLength = strlen(history_commands[history_count - arrowStatus]);
+					char tmp[MAXN] = {};
+					strcpy(tmp, history_commands[history_count - arrowStatus]);
+					if (tmp[strlen(tmp) - 1] == '\n') tmp[strlen(tmp) - 1] = '\0';
+					strcat(commandLine, tmp);
+					printf("%s", tmp);
+					commandLength = strlen(tmp);
 					arrowFlag = 1;
 				}
 			}
