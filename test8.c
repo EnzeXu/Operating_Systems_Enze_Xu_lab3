@@ -12,8 +12,8 @@
 #include <sys/wait.h>
 #include <pwd.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
+//#include <readline/readline.h>
+//#include <readline/history.h>
 
 #define MAX_HISTORY 100
 #define MAX_HISTORY_SAVE 1000
@@ -36,7 +36,7 @@ void printArgv(char *argv[]);
 int pureExecute(char *argvOri[], int left, int right);
 int commandExecutePipe(char *argv[], int left, int right);
 int commandExecute(char *line);
-void quitHandler(int);
+//void quitHandler(int);
 
 // get pwd
 char *getMainPath(void) {
@@ -501,8 +501,8 @@ int main(){
 				printf("\b \b");
 			}
 			//system("stty echo");
-			//printf("c1 = '%c' ", c1);
-			//printf("c2 = '%c' ", c2);
+			printf("c1 = '%c' ", c1);
+			printf("c2 = '%c' ", c2);
 			if (c2 == 'A') {
 				for (int i = 0; i < commandLength; ++i) {
 					printf("\b \b");
