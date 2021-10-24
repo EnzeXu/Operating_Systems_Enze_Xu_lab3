@@ -18,6 +18,7 @@
 #define MAX_HISTORY 30
 #define MAX_HISTORY_SAVE 1000
 #define MAXN 1000
+#define MAX_RECURSION 20
 
 char mainPath[MAXN];
 int history_id_start;
@@ -33,9 +34,9 @@ int findHistory(char* arg);
 void printHistory(int num);
 void saveHistory(char *line);
 void printArgv(char *argv[]);
-int pureExecute(char *argvOri[], int left, int right);
-int commandExecutePipe(char *argv[], int left, int right);
-int commandExecute(char *line, int saveFlag);
+int pureExecute(char *argvOri[], int left, int right, int recursionCount);
+int commandExecutePipe(char *argv[], int left, int right, int recursionCount);
+int commandExecute(char *line, int saveFlag, int recursionCount);
 //void quitHandler(int);
 
 // get pwd
@@ -182,7 +183,7 @@ void printArgv(char *argv[]) {
 }
 
 // pure execution
-int pureExecute(char *argvOri[], int left, int right) {
+int pureExecute(char *argvOri[], int left, int right, int recursionCount) {
 	char *argv[MAXN] = {};
 	int argc = right - left;
 	for (int i = left; i < right; ++i) {
@@ -193,6 +194,10 @@ int pureExecute(char *argvOri[], int left, int right) {
 	
 	// deal with !xyz history command
 	if (argc == 1 && argv[0][0] == '!') {
+		if (recursionCount >= MAX_RECURSION) {
+			printf("\033[32m[Enze Shell] TOO MANY RECURSIONS! To be frank, you are so smart that you can find the wonderful case and see this\033[0m\n");
+			return -1;
+		}
 		int findHistoryReturn = findHistory(argv[0]);
 		if (findHistoryReturn == -3) {
 			printf("\033[32m[Enze Shell] in command !xyz, xyz must be an integer\033[0m\n");
@@ -211,7 +216,7 @@ int pureExecute(char *argvOri[], int left, int right) {
 		char tmp[MAXN];
 		strcpy(tmp, history_commands[findHistoryReturn]);
 		//printf("\033[0m");
-		commandExecute(tmp, 0);
+		commandExecute(tmp, 0, recursionCount + 1);
 		return 0;
 	}
 	
@@ -256,7 +261,7 @@ int pureExecute(char *argvOri[], int left, int right) {
 }
 
 // deal with pipe
-int commandExecutePipe(char *argv[], int left, int right) {
+int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 	//printf("commandExecutePipe: [%d, %d)\n", left, right);
 	
 	if (left >= right) return 1;
@@ -312,13 +317,13 @@ int commandExecutePipe(char *argv[], int left, int right) {
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
 		close(f_des[1]);
-		result = commandExecutePipe(argv, pipeSeat + 1, right);
+		result = commandExecutePipe(argv, pipeSeat + 1, right, recursionCount);
 	}
 	return result;
 }
 
 // deal command
-int commandExecute(char *line, int saveFlag) {
+int commandExecute(char *line, int saveFlag, int recursionCount) {
 	char line_origin[MAXN];
 	strcpy(line_origin, line);
 	char commandPathBin[MAXN] = "/bin/";
@@ -404,7 +409,7 @@ int commandExecute(char *line, int saveFlag) {
 	if (pid == 0) {
 		int in_f = dup(fileno(stdin));
 		int out_f = dup(fileno(stdout));
-		int result = commandExecutePipe(argv, 0, argc);
+		int result = commandExecutePipe(argv, 0, argc, recursionCount);
 		dup2(in_f, fileno(stdin));
 		dup2(out_f, fileno(stdout));
 		exit(result);
@@ -579,7 +584,7 @@ int main(){
 				printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
 			}
 			else {
-				int result = commandExecute(commandLine, 1);
+				int result = commandExecute(commandLine, 1, 0);
 			}
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
