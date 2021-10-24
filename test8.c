@@ -351,10 +351,10 @@ int commandExecute(char *line) {
 			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - 1)? (history_id_start + history_count - 1): history_id_start, history_id_start + history_count - 1);
 			return -1;
 		}
-		char tmp[MAXN] = {};
-		strcpy(tmp, history_commands[findHistoryReturn]);
-		if (tmp[strlen(tmp) - 1] == '\n') tmp[strlen(tmp) - 1] = '\0';
-		printf("\033[32m[Enze Shell] command \"!%d\" equals to \"%s\"\033[0m\n", history_id[findHistoryReturn], tmp);
+		char tmp_cmd[MAXN] = {};
+		strcpy(tmp_cmd, history_commands[findHistoryReturn]);
+		if (tmp_cmd[strlen(tmp_cmd) - 1] == '\n') tmp_cmd[strlen(tmp_cmd) - 1] = '\0';
+		printf("\033[32m[Enze Shell] command \"!%d\" equals to \"%s\"\033[0m\n", history_id[findHistoryReturn], tmp_cmd);
 		char tmp[MAXN];
 		strcpy(tmp, history_commands[findHistoryReturn]);
 		//printf("\033[0m");
