@@ -566,6 +566,7 @@ int main(){
 				commandLength -= 1;
 				commandLine[strlen(commandLine) - 1] = '\0';
 				printf("%c %c", 8, 8);
+				printf("%c%c", 8, 8);
 			}
 			arrowFlag = 1;
 		}
