@@ -492,6 +492,7 @@ int main(){
 		//system("stty echo");
 		//printf("c ascii = '%d' ", c);
 		if (c0 == 27) {
+			// Ctrl-[
 			system("stty raw");
 			//system("stty -echo");
 			c1 = getchar();
@@ -508,7 +509,7 @@ int main(){
 					printf("\b \b");
 				}
 				arrowStatus += 1;
-				if (arrowStatus > 10) arrowStatus = 10;
+				if (arrowStatus > history_count) arrowStatus = history_count;
 				memset(commandLine, 0, sizeof(commandLine));
 				char tmp[MAXN] = {};
 				strcpy(tmp, history_commands[history_count - arrowStatus]);
@@ -527,7 +528,7 @@ int main(){
 				}
 				else {
 					arrowStatus -= 1;
-					if (arrowStatus > 10) arrowStatus = 10;
+					// if (arrowStatus > history_count) arrowStatus = history_count;
 					memset(commandLine, 0, sizeof(commandLine));
 					char tmp[MAXN] = {};
 					strcpy(tmp, history_commands[history_count - arrowStatus]);
@@ -540,6 +541,7 @@ int main(){
 			}
 		}
 		else if (c0 == 8) {
+			// Ctrl-H: "\b"
 			if (commandLength == 0) {
 				for (int i = 0; i < 2; ++i) {
 					printf("\b \b");
@@ -555,6 +557,7 @@ int main(){
 			arrowFlag = 1;
 		}
 		else if (c0 == 13) {
+			// Ctrl-M: "\n"
 			for (int i = 0; i < 2; ++i) {
 				printf("\b \b");
 			}
@@ -579,8 +582,13 @@ int main(){
 			arrowStatus = 0;
 		}
 		else if (c0 == 4) {
+			// Ctrl-D
 			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
 			break;
+		}
+		else if (c0 >= 0 && c0 <= 31) {
+			// Ctrl-other
+			arrowFlag = 1;
 		}
 		else {
 			commandLine[strlen(commandLine)] = c0;
