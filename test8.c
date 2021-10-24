@@ -35,7 +35,7 @@ void saveHistory(char *line);
 void printArgv(char *argv[]);
 int pureExecute(char *argvOri[], int left, int right);
 int commandExecutePipe(char *argv[], int left, int right);
-int commandExecute(char *line);
+int commandExecute(char *line, int saveFlag);
 //void quitHandler(int);
 
 // get pwd
