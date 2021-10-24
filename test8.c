@@ -558,7 +558,7 @@ int main(){
 			for (int i = 0; i < 2; ++i) {
 				printf("\b \b");
 			}
-			printf("\nDealing with command '%s'\n", commandLine);
+			// printf("\nDealing with command '%s'\n", commandLine);
 			strcat(commandLine, "\n");
 			if (strcmp(commandLine, "exit()\n") == 0) {
 				saveHistory(commandLine);
@@ -568,7 +568,6 @@ int main(){
 			else if (strcmp(commandLine, "exit\n") == 0) {
 				saveHistory(commandLine);
 				printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
-				continue;
 			}
 			else {
 				int result = commandExecute(commandLine);
