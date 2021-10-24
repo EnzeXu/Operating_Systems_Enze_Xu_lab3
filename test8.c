@@ -486,21 +486,22 @@ int main(){
 			printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
 		}
 		system("stty raw");
-		//system("stty -echo");
+		system("stty -echo");
 		c0 = getchar();
 		system("stty -raw");
-		//system("stty echo");
+		system("stty echo");
 		//printf("c ascii = '%d' ", c);
 		if (c0 == 27) {
 			// Ctrl-[
 			system("stty raw");
-			//system("stty -echo");
+			system("stty -echo");
 			c1 = getchar();
 			c2 = getchar();
 			system("stty -raw");
-			for (int i = 0; i < 4; ++i) {
-				printf("\b \b");
-			}
+			system("stty echo");
+			//for (int i = 0; i < 4; ++i) {
+			//	printf("\b \b");
+			//}
 			//system("stty echo");
 			//printf("c1 = '%c' ", c1);
 			//printf("c2 = '%c' ", c2);
@@ -543,24 +544,22 @@ int main(){
 		else if (c0 == 8) {
 			// Ctrl-H: "\b"
 			if (commandLength == 0) {
-				for (int i = 0; i < 2; ++i) {
-					printf("\b \b");
-				}
+				//for (int i = 0; i < 2; ++i) {
+				//	printf("\b \b");
+				//}
 			}
 			else {
 				commandLength -= 1;
 				commandLine[strlen(commandLine) - 1] = '\0';
-				for (int i = 0; i < 3; ++i) {
-					printf("\b \b");
-				}
+				printf("\b \b");
 			}
 			arrowFlag = 1;
 		}
 		else if (c0 == 13) {
 			// Ctrl-M: "\n"
-			for (int i = 0; i < 2; ++i) {
-				printf("\b \b");
-			}
+			//for (int i = 0; i < 2; ++i) {
+			//	printf("\b \b");
+			//}
 			// printf("\nDealing with command '%s'\n", commandLine);
 			strcat(commandLine, "\n");
 			printf("\n");
@@ -591,6 +590,7 @@ int main(){
 			arrowFlag = 1;
 		}
 		else {
+			printf("%c", c0);
 			commandLine[strlen(commandLine)] = c0;
 			commandLine[strlen(commandLine) + 1] = '\0';
 			commandLength += 1;
