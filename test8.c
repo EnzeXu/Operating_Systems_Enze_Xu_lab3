@@ -418,6 +418,7 @@ int commandExecute(char *line) {
 }
 
 // signal handler used to ignore Ctrl-C
+/*
 void quitHandler(int theInt) {
 	//fflush(stdin);
 	//printf("\n[Enze Shell] Not QUITTING (SIGINT = %d)\n", theInt);
@@ -425,10 +426,11 @@ void quitHandler(int theInt) {
 	//fflush(stdout);
 	return;
 }
+*/
 
 
 int main(){
-	signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
+	//signal(SIGINT, quitHandler); // signal handler used to ignore Ctrl-C
 	time_t t;
 	time(&t);
 	readHistory();
@@ -560,6 +562,9 @@ int main(){
 				saveHistory(commandLine);
 				printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
 				continue;
+			}
+			else {
+				int result = commandExecute(commandLine);
 			}
 			commandLength = 0;
 			memset(commandLine, 0, sizeof(commandLine));
