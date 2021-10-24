@@ -110,7 +110,7 @@ int findHistory(char* arg) {
 	if (history_count == 0) {
 		return -2; // empty history
 	}
-	if (num < history_id_start || num < history_id_start + history_count - MAX_HISTORY || num > history_id_start + history_count - 1) {
+	if (num < history_id_start /*|| num < history_id_start + history_count - MAX_HISTORY*/ || num > history_id_start + history_count - 1) {
 		return -1; // id not found
 	}
 	return num - history_id_start;
