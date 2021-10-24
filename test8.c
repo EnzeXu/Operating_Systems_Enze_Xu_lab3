@@ -195,7 +195,7 @@ int pureExecute(char *argvOri[], int left, int right, int recursionCount) {
 	// deal with !xyz history command
 	if (argc == 1 && argv[0][0] == '!') {
 		if (recursionCount >= MAX_RECURSION) {
-			printf("\033[32m[Enze Shell] TOO MANY RECURSIONS! To be frank, you are so smart that you can find the wonderful case and see this\033[0m\n");
+			printf("\033[32m[Enze Shell] TOO MANY RECURSIONS! To be frank, you are so smart that you can find the wonderful case and see this text\033[0m\n");
 			return -1;
 		}
 		int findHistoryReturn = findHistory(argv[0]);
