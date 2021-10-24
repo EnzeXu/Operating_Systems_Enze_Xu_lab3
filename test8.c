@@ -565,7 +565,7 @@ int main(){
 			else {
 				commandLength -= 1;
 				commandLine[strlen(commandLine) - 1] = '\0';
-				printf("\b \b");
+				printf("%c %c", 8, 8);
 			}
 			arrowFlag = 1;
 		}
