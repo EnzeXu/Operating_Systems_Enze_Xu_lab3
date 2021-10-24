@@ -485,7 +485,7 @@ int main(){
 		}
 		system("stty raw");
 		//system("stty -echo");
-		c = getchar();
+		c0 = getchar();
 		system("stty -raw");
 		//system("stty echo");
 		//printf("c ascii = '%d' ", c);
