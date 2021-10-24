@@ -110,7 +110,7 @@ int findHistory(char* arg) {
 	if (history_count == 0) {
 		return -2; // empty history
 	}
-	if (num < history_id_start || num > history_id_start + history_count - 1) {
+	if (num < history_id_start || num < history_id_start + history_count - MAX_HISTORY || num > history_id_start + history_count - 1) {
 		return -1; // id not found
 	}
 	return num - history_id_start;
@@ -348,10 +348,13 @@ int commandExecute(char *line) {
 			printf("\033[32m[Enze Shell] sorry history is empty now, so !xyz command is rejected\033[0m\n");
 			return -1;
 		} else if (findHistoryReturn == -1) {
-			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", history_id_start, history_id_start + history_count - 1);
+			printf("\033[32m[Enze Shell] xyz is out of range(%d to %d) in !xyz command\033[0m\n", (history_id_start < history_id_start + history_count - 1)? (history_id_start + history_count - 1): history_id_start, history_id_start + history_count - 1);
 			return -1;
 		}
-		printf("\033[32m[Enze Shell] executing command %d: %s\033[0m", history_id[findHistoryReturn], history_commands[findHistoryReturn]);
+		char tmp[MAXN] = {};
+		strcpy(tmp, history_commands[findHistoryReturn]);
+		if (tmp[strlen(tmp) - 1] == '\n') tmp[strlen(tmp) - 1] = '\0';
+		printf("\033[32m[Enze Shell] command \"!%d\" equals to \"%s\"\033[0m\n", history_id[findHistoryReturn], tmp);
 		char tmp[MAXN];
 		strcpy(tmp, history_commands[findHistoryReturn]);
 		//printf("\033[0m");
