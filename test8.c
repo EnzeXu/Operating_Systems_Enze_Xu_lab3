@@ -537,6 +537,8 @@ int main(){
 				}
 				if (arrowStatus == 0 || arrowStatus == 1) {
 					commandLength = 0;
+					memset(commandLine, 0, sizeof(commandLine));
+					arrowFlag = 1;
 				}
 				else {
 					arrowStatus -= 1;
