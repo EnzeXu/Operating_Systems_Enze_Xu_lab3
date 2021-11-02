@@ -184,6 +184,12 @@ void printArgv(char *argv[]) {
 
 // pure execution
 int pureExecute(char *argvOri[], int left, int right, int recursionCount) {
+	char commandPathBin[MAXN] = "/bin/";
+	char commandPathUsrBin[MAXN] = "/usr/bin/";
+	char commandFullBin[MAXN];
+	char commandFullUsrBin[MAXN];
+	char commandFull[MAXN];
+	
 	char *argv[MAXN] = {};
 	int argc = right - left;
 	for (int i = left; i < right; ++i) {
@@ -238,6 +244,26 @@ int pureExecute(char *argvOri[], int left, int right, int recursionCount) {
 			printf("\033[32m[Enze Shell] argc of a history command should be 1 or 2, but current argc = %d\033[0m\n", argc);
 		}
 		return 0;
+	}
+	
+	// check if the command is available
+	strcpy(commandFullBin, commandPathBin);
+	strcat(commandFullBin, argv[0]);
+	strcpy(commandFullUsrBin, commandPathUsrBin);
+	strcat(commandFullUsrBin, argv[0]);
+	
+	if (access(commandFullBin, F_OK) == 0) {
+		// strcpy(commandFull, commandFullBin);
+	}
+	else if (access(commandFullUsrBin, F_OK) == 0) {
+		// strcpy(commandFull, commandFullUsrBin);
+	}
+	else if (access(argv[0], F_OK) == 0) {
+		// strcpy(commandFull, commandFullUsrBin);
+	}
+	else {
+		printf("\033[32m[Enze Shell] %s: command not found\033[0m\n", argv[0]);
+		return -1;
 	}
 	
 	// fork
