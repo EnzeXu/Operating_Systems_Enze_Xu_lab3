@@ -333,7 +333,7 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 	printf("status = %d\n", status);
 	printf("wait_pid = %d\n", wait_pid);
 
-	if (wait_pid == -1) { // error in child
+	if (status == 0) { // error in child
 		//close(f_des[1]);
 		dup2(f_des[0], fileno(stdin));
 		close(f_des[0]);
