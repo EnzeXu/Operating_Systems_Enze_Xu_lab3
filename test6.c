@@ -3,7 +3,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-#define MAXN 100
+#define MAXN 1000
 
 char *getIp(void) {
 	char *ipAddr = NULL;
@@ -28,6 +28,7 @@ char *getIp(void) {
 		//freeifaddrs(ifAddrStruct);
 	}
 	return ipAddr;
+	
 }
 
 int main() {
