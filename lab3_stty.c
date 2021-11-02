@@ -451,43 +451,6 @@ int main(){
 	printf("\033[32m[Enze Shell] time        : (GMT) %s\033[0m", ctime(&t)); // GMT time
 	printf("\033[32m[Enze Shell] max_history : %d\033[0m\n", MAX_HISTORY);
 	printf("\033[32m[Enze Shell] history     : %d\033[0m\n", history_count);
-	/*
-	while(1) {
-		char prompt[MAXN] = "\033[34m";
-		strcat(prompt, getUserName());
-		strcat(prompt, ":");
-		strcat(prompt, getMainPath());
-		strcat(prompt, "\033[37m % ");
-		//printf("\033[34m%s:%s\033[37m %% ", getUserName(), getMainPath());
-		char *line = readline(prompt);
-		if (!line) {
-			printf("\n\033[32m[Enze Shell] OK close shop and go home (type: \"Ctrl-D\", pid: %d)\033[0m\n", getpid());
-			free(line);
-			break;
-		}
-		int length = strlen(line);
-		for (int i = 0; i < length; ++i) {
-			if (line[i] != ' ' && line[i] != '\n') {
-				add_history(line);
-				break;
-			}
-		}
-		strcat(line, "\n");
-		if (strcmp(line, "exit\n") == 0) {
-			saveHistory(line);
-			printf("\033[32m[Enze Shell] please use exit() or Ctrl-D to exit\033[0m\n");
-			continue;
-		}
-		if (strcmp(line, "exit()\n") == 0) {
-			saveHistory(line);
-			printf("\033[32m[Enze Shell] OK close shop and go home (type: \"exit()\", pid: %d)\033[0m\n", getpid());
-			free(line);
-			break;
-		}
-		int result = commandExecute(line, 1);
-		free(line);
-	}
-	*/
 	int arrowStatus = 0;
 	int commandLength = 0;
 	char commandLine[MAXN] = {0};
@@ -511,12 +474,6 @@ int main(){
 			c2 = getchar();
 			system("stty -raw");
 			system("stty echo");
-			//for (int i = 0; i < 4; ++i) {
-			//	printf("\b \b");
-			//}
-			//system("stty echo");
-			//printf("c1 = '%c' ", c1);
-			//printf("c2 = '%c' ", c2);
 			if (c2 == 'A') {
 				for (int i = 0; i < commandLength; ++i) {
 					printf("\b \b");
@@ -610,9 +567,6 @@ int main(){
 			commandLength += 1;
 			arrowFlag = 1;
 		}
-		
-		//printf( "%c%c%c", c, c, c);
-		//c = getchar();
 	}
 	return 0;
 }
