@@ -323,7 +323,7 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 		close(f_des[0]);
 		close(f_des[1]);
 		result = pureExecute(argv, left, pipeSeat, recursionCount);
-		exit(result);
+		exit(-1);
 	}
 	
 	// parent
