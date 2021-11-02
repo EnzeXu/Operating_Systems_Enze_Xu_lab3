@@ -323,14 +323,14 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 		close(f_des[0]);
 		close(f_des[1]);
 		result = pureExecute(argv, left, pipeSeat, recursionCount);
-		exit(-1);
+		exit(result);
 	}
 	
 	// parent
 	int status;
 	pid_t wait_pid;
 	wait_pid = waitpid(pid, &status, 0);
-	
+	printf("status = %d\n", status);
 	printf("wait_pid = %d\n", wait_pid);
 
 	if (wait_pid == -1) { // error in child
