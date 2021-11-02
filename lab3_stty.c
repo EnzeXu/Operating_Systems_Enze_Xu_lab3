@@ -330,6 +330,8 @@ int commandExecutePipe(char *argv[], int left, int right, int recursionCount) {
 	int status;
 	pid_t wait_pid;
 	wait_pid = waitpid(pid, &status, 0);
+	
+	printf("wait_pid = %d\n", wait_pid);
 
 	if (wait_pid == -1) { // error in child
 		//close(f_des[1]);
